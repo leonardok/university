@@ -6,8 +6,8 @@ while true; do
         i=0 
         for h in $(cat $2); do
             if [ -f $h -a -x $h ]; then 
-                $h &gt;/dev/null 2&gt;/dev/null 
-                echo “$i:$h -&gt; $?\n”
+                $h >/dev/null 2>/dev/null 
+                echo "$i:$h -> $?\n"
             fi
             i=$((i+1))
         done ;; 
