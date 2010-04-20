@@ -11,11 +11,9 @@ The conditions for it to exit is:
         $ script -f arq.txt
    In this case the output will be:
         $ script [-e|-c] filename...
-
 3. Case we give to the script 3 arguments it will do the first loop ($# is 3) then
    in the second ($# is 1) it will exit as in number 1.
 
-12345678901234567890123456789012345678901234567890123456789012345678901234567890
 While inside the loop, it will enter when the option '-e' and a file name is 
 given, it will test if the file exist ('-f') and ('-a') if the file is 
 executable ('-x'), at this point the file name will be stored inside $h. If the 
