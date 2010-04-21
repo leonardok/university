@@ -37,7 +37,7 @@ int main(int argc, char **argv){
                 strcpy(commands[i-1], argv[i]);
         }
 
-
+        /* loop through command[] and execute each */
         for(i=0; i<arg_num; i++){
 
                 /* THIS IS DANGEROUS
@@ -48,34 +48,41 @@ int main(int argc, char **argv){
                 **/
                 char *command = commands[i];
 
-                /* do fork in the cmd */
+                /* do fork */
+                
+                /* if connot create child exit with error */
                 if((pid[i] = fork()) < 0){
                         printf("Could not create the child");
                         exit(-1);
                 }
+                /* if pid is 0 is because we are the child */
                 else if(pid[i] == 0){
 #ifdef DEBUG
+                        /* this will run when DEBUG is defined in compile time */
                         printf("This is a child process with PID %d\n", getpid());
                         printf("Executing command: %s\n", command);
 #endif
+                        /* no args are passed to the cmd */
                         char *args[] = {command, (char *) 0};
 
+                        /* execute the command then exit*/
                         execvp(command, args);
                         exit(0);
                 }
-        
-                /* if pid still not done kill it */
+                /* if pid is > 0 we are the parent code */
                 else {
+                        /* if pid still not done kill it */
                         sleep(2);
                         kill(pid[i], SIGKILL);
 
+                        /* get the return status of the child */
                         int stat_loc;
                         waitpid(pid[i], &stat_loc, WUNTRACED);
 
                         if(stat_loc == 0) ns++; else nf++;
                 }
-        /* end for */
         }
+        /* end for */
 
         printf("\nStatus:\n");
         printf("Total commands executed is %d\n", ns+nf);
