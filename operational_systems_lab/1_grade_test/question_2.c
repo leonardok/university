@@ -6,101 +6,107 @@
 
 #define POINTER_SIZE 4
 
-int main(int argc, char **argv){
-        if(argc < 2){
-                printf("Unsuficient parameters.\nUse %s command [command]\n", argv[0]);
-                exit(-1);
-        }
+int main(int argc, char **argv)
+{
+	if (argc < 2) {
+		printf("Unsuficient parameters.\nUse %s command [command]\n",
+		       argv[0]);
+		exit(-1);
+	}
 
-        /* arg_num is argc - 1 bacause in argv position 0 is the cmd name
-         * and we just want to get passed args
-        **/
-        int arg_num = argc - 1;
+	/* arg_num is argc - 1 bacause in argv position 0 is the cmd name
+	 * and we just want to get passed args
+	 **/
+	int arg_num = argc - 1;
 
-        /* ns = return status 0
-         * nf = other return status
-        **/
-        int ns, nf;
+	/* ns = return status 0
+	 * nf = other return status
+	 **/
+	int ns, nf;
 
-        int pid[arg_num];
-        char **commands = malloc(POINTER_SIZE * argc);
+	int pid[arg_num];
+	char **commands = malloc(POINTER_SIZE * argc);
 
-        /* copy contents from argv to **commands */
-        int i;
-        for(i=1; i<argc;i++){
-                int current_size = sizeof(char)*(strlen(argv[i])+1);
+	/* copy contents from argv to **commands */
+	int i;
+	for (i = 1; i < argc; i++) {
+		int current_size = sizeof(char) * (strlen(argv[i]) + 1);
 
-                /* now allocate the size of the current command and
-                 * store it into the commands pointer-pointer
-                **/
-                commands[i-1] = malloc(current_size);
-                strcpy(commands[i-1], argv[i]);
-        }
+		/* now allocate the size of the current command and
+		 * store it into the commands pointer-pointer
+		 **/
+		commands[i - 1] = malloc(current_size);
+		strcpy(commands[i - 1], argv[i]);
+	}
 
-        /* loop through command[] and execute each */
-        for(i=0; i<arg_num; i++){
+	/* loop through command[] and execute each */
+	for (i = 0; i < arg_num; i++) {
 
-                /* THIS IS DANGEROUS
-                 *
-                 * get command to run and cerefull with the command pointer.
-                 * when we free the commands[i] the memory pointed by *command
-                 * is freed within. 
-                **/
-                char *command = commands[i];
+		/* THIS IS DANGEROUS
+		 *
+		 * get command to run and cerefull with the command pointer.
+		 * when we free the commands[i] the memory pointed by *command
+		 * is freed within. 
+		 **/
+		char *command = commands[i];
 
-                /* do fork */
-                
-                /* if connot create child exit with error */
-                if((pid[i] = fork()) < 0){
-                        printf("Could not create the child");
-                        exit(-1);
-                }
-                /* if pid is 0 is because we are the child */
-                else if(pid[i] == 0){
+		/* do fork */
+
+		/* if connot create child exit with error */
+		if ((pid[i] = fork()) < 0) {
+			printf("Could not create the child");
+			exit(-1);
+		}
+		/* if pid is 0 is because we are the child */
+		else if (pid[i] == 0) {
 #ifdef DEBUG
-                        /* this will run when DEBUG is defined in compile time */
-                        printf("This is a child process with PID %d\n", getpid());
-                        printf("Executing command: %s\n", command);
+			/* this will run when DEBUG is defined in compile time */
+			printf("This is a child process with PID %d\n",
+			       getpid());
+			printf("Executing command: %s\n", command);
 #endif
-                        /* no args are passed to the cmd */
-                        char *args[] = {command, (char *) 0};
+			/* no args are passed to the cmd */
+			char *args[] = { command, (char *)0 };
 
-                        /* execute the command then exit*/
-                        execvp(command, args);
-                        exit(0);
-                }
-                /* if pid is > 0 we are the parent code */
-                else {
-                        /* if pid still not done kill it */
-                        sleep(2);
-                        kill(pid[i], SIGKILL);
+			/* execute the command then exit */
+			execvp(command, args);
+			exit(0);
+		}
+		/* if pid is > 0 we are the parent code */
+		else {
+			/* if pid still not done kill it */
+			sleep(2);
+			kill(pid[i], SIGKILL);
 
-                        /* get the return status of the child */
-                        int stat_loc;
-                        waitpid(pid[i], &stat_loc, WUNTRACED);
+			/* get the return status of the child */
+			int stat_loc;
+			waitpid(pid[i], &stat_loc, WUNTRACED);
 
-                        if(stat_loc == 0) ns++; else nf++;
-                }
-        }
-        /* end for */
+			if (stat_loc == 0)
+				ns++;
+			else
+				nf++;
+		}
+	}
+	/* end for */
 
-        printf("\nStatus:\n");
-        printf("Total commands executed is %d\n", ns+nf);
-        printf("Total commands executed with success is %d\n", ns);
+	printf("\nStatus:\n");
+	printf("Total commands executed is %d\n", ns + nf);
+	printf("Total commands executed with success is %d\n", ns);
 
-        /* we can free it all now, even knowing OS will free all areas
-         * of this process when it is done, it is nice to know we are
-         * doing it ourselves
-        **/
-        for(i=arg_num-1; i>=0; i--){
-                int current_size = sizeof(char)*(strlen(commands[i])+1);
+	/* we can free it all now, even knowing OS will free all areas
+	 * of this process when it is done, it is nice to know we are
+	 * doing it ourselves
+	 **/
+	for (i = arg_num - 1; i >= 0; i--) {
+		int current_size = sizeof(char) * (strlen(commands[i]) + 1);
 
-                free(commands[i]);
-                commands[i] = NULL;
-                printf("free ok\n");
-        }
+		free(commands[i]);
+		commands[i] = NULL;
+		printf("free ok\n");
+	}
 
-        free(commands);
+	free(commands);
 
-        return 0;
+	return 0;
 }
