@@ -6,7 +6,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
-#define HASH_SIZE 91
+#define HASH_SIZE 703
 
 /* decate the hash */
 typedef struct hash_s hash_t;
@@ -29,15 +29,13 @@ int find_magic(char *key){
         for(i=0; i<strlen(key); i++){
                 magic_key += (unsigned int) key[i];
         }
-        printf("hashed key is %d\n", magic_key);
+        //printf("hashed key is %d\n", magic_key);
         return magic_key;
 }
 
 void describe_hash(void){
         int i;
         for(i=0; i<HASH_SIZE; i++){
-                printf("Position %d: ", i);
-
                 hash_t *h = &hash[i];
                 while(h != NULL){
                         printf("+");
@@ -48,6 +46,8 @@ void describe_hash(void){
 }
 
 int hashfy(char *key){
+        printf("Word is '%s'\n", key);
+
         /* find magic */
         int hashed_key = find_magic(key);
         int hash_position = hashed_key % HASH_SIZE;
@@ -66,7 +66,6 @@ int hashfy(char *key){
 
         h->value = malloc(sizeof(char)*(strlen(key)+1));
         strcpy(h->value, key);
-
         return 0;
 }
 
@@ -89,13 +88,13 @@ int main(void){
                 int buffer_pos;
                 for(buffer_pos=0; buffer_pos<512; buffer_pos++){
                         char ch = buffer[buffer_pos];
-                        if(ch != '\n' && ch != ' '){
-                                word[word_pos] = ch;
+                        if(ch != '\n' && ch != ' ' && ch != '.' && ch != ','){
+                                word[word_pos++] = ch;
+                                word[word_pos] = '\0';
                         }
-                        else{
-                                hashfy(word);
-                                strcpy(word, "");
+                        else if(strlen(word) > 0){
                                 word_pos = 0;
+                                hashfy(word);
                         }   
                 }
         }
