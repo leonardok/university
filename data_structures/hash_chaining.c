@@ -6,9 +6,8 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
-#define HASH_SIZE 703
+#define HASH_SIZE 73
 
-/* decate the hash */
 typedef struct hash_s hash_t;
 struct hash_s {
         char *value;
@@ -29,13 +28,13 @@ int find_magic(char *key){
         for(i=0; i<strlen(key); i++){
                 magic_key += (unsigned int) key[i];
         }
-        //printf("hashed key is %d\n", magic_key);
         return magic_key;
 }
 
 void describe_hash(void){
         int i;
         for(i=0; i<HASH_SIZE; i++){
+                printf("Position %d: ", i);
                 hash_t *h = &hash[i];
                 while(h != NULL){
                         printf("+");
@@ -46,26 +45,34 @@ void describe_hash(void){
 }
 
 int hashfy(char *key){
-        printf("Word is '%s'\n", key);
-
         /* find magic */
         int hashed_key = find_magic(key);
         int hash_position = hashed_key % HASH_SIZE;
-        int chain_position;
 
         hash_t *h = &hash[hash_position];
         hash_t *p = NULL;
-        while(h != NULL){
+
+        if(h->value == NULL){
+                h->value = malloc(sizeof(char)*(strlen(key)+1));
+                strcpy(h->value, key);
+        }
+        else if(strncmp(h->value, key, strlen(key)) != 0){
                 p = h;
                 h = h->next;
-                chain_position++;
-        }
-        
-        h = malloc(sizeof(hash_t));
-        if(p) p->next = h;
+                while((h != NULL)){
+                        if (strncmp(h->value, key, strlen(key)) == 0) break;
+                        p = h;
+                        h = h->next;
+                }
+                
+                if(h == NULL || strcmp(h->value, key) != 0){
+                        h = malloc(sizeof(hash_t));
+                        if(p) p->next = h;
+                        h->value = malloc(sizeof(char)*(strlen(key)+1));
+                        strcpy(h->value, key);
+                }
 
-        h->value = malloc(sizeof(char)*(strlen(key)+1));
-        strcpy(h->value, key);
+        }
         return 0;
 }
 
@@ -84,7 +91,6 @@ int main(void){
         char word[20];
         int word_pos = 0;
         while(read(fp, buffer, 512)){
-                printf("%s", buffer);
                 int buffer_pos;
                 for(buffer_pos=0; buffer_pos<512; buffer_pos++){
                         char ch = buffer[buffer_pos];
