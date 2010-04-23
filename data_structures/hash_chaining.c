@@ -36,7 +36,7 @@ void describe_hash(void){
         for(i=0; i<HASH_SIZE; i++){
                 printf("Position %d: ", i);
                 hash_t *h = &hash[i];
-                while(h != NULL){
+                while(h && h->value){
                         printf("+");
                         h = h->next;
                 }
@@ -88,19 +88,21 @@ int main(void){
 
         /* get file contents */
         char buffer[512];
-        char word[20];
+        char word[25];
         int word_pos = 0;
         while(read(fp, buffer, 512)){
                 int buffer_pos;
                 for(buffer_pos=0; buffer_pos<512; buffer_pos++){
                         char ch = buffer[buffer_pos];
-                        if(ch != '\n' && ch != ' ' && ch != '.' && ch != ','){
+                        if((ch > 65 && ch < 90) || (ch > 97 && ch < 122)){
                                 word[word_pos++] = ch;
                                 word[word_pos] = '\0';
                         }
                         else if(strlen(word) > 0){
                                 word_pos = 0;
                                 hashfy(word);
+
+                                word[0] = '\0';
                         }   
                 }
         }
