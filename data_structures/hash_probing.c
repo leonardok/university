@@ -14,6 +14,54 @@ void ini_hash(hash_t *hash){
         }
 }
 
+int hashfy(hash_t hash[HASH_SIZE], char *key){
+        int hashed_key, hash_position;
+        hash_t *h, *p;
+        int i;
+
+        for(i=0;i<PROBING_TRIES;i++){
+                hashed_key = magic(key, i);
+                hash_position = hashed_key % (HASH_SIZE);
+                h = &hash[hash_position];
+                p = NULL;
+
+                if(!h->value){
+                        h->value = malloc(sizeof(char)*(strlen(key)+1));
+                        strcpy(h->value, key);
+                        h->next = NULL;
+                        return hash_position;
+                }
+                else {
+                        printf("  comp %d:'%s' <- '%s'\n", hash_position, h->value, key);
+                        /* if same value admit is not a colision */
+                        if(strncmp(h->value, key, strlen(key)) == 0){
+                                printf("same word!\n");
+                                return 0;
+                        }
+
+                        printf("  passou\n");
+                        register_colision(hash_position);
+                }
+                printf("  probing\n");
+        }
+
+        /* could not put it by probing, so chain it */
+        while(h && h->value){
+                if (strncmp(h->value, key, strlen(key)) == 0) return 0;
+                p = h;
+                h = h->next;
+        }
+        h = malloc(sizeof(hash_t));
+        h->value = malloc(sizeof(char)*(strlen(key)+1));
+        h->next = NULL;
+        p->next = h;
+        strcpy(h->value, key);
+        printf("inserted word %s\n", key);
+
+        return 0;
+}
+
+
 int main(int argc, char **argv){
         printf("argc is %d", argc);
         if(argc < 2){
@@ -35,12 +83,14 @@ int main(int argc, char **argv){
 
         switch(argv[1][1]){
                 case 'l':
-                        hash_func = &hashfy_linear_probing;
+                        magic = &linear_find_magic;
                         print_colision_map = &linear_colision_map;
+                        register_colision  = &linear_register_colision;
                         break;
                 case 'q':
-                        hash_func = &quadratic_probing_hashfy;
+                        magic = &quadratic_find_magic;
                         print_colision_map = &quadratic_colision_map;
+                        register_colision  = &quadratic_register_colision;
                         break;
                 default: show_usage(argv[0]);;
         }
@@ -65,7 +115,7 @@ int main(int argc, char **argv){
                         }
                         else if(strlen(word) > 0){
                                 word_pos = 0;
-                                int pos = hash_func(hash, word);
+                                int pos = hashfy(hash, word);
                                 printf("position %d -> '%s'\n",pos, hash[pos].value);
                                 word[0] = '\0';
                         }

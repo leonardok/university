@@ -16,5 +16,6 @@ struct hash_s {
         hash_t *next;
 };
 
-int (*hash_func)(hash_t hash[HASH_SIZE], char *key);
+int (*magic)(char *key, int step);
 void (*print_colision_map)(hash_t hash[HASH_SIZE]);
+void (*register_colision)(int position);
