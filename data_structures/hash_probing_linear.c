@@ -1,10 +1,11 @@
 #include "hash_probing.h"
+#include "hash_probing_linear.h"
 
 /* global variables */
-int quadratic_hash_colisions[HASH_SIZE];
-int quadratic_total_colisions;
+int hash_linear_colisions[HASH_SIZE];
+int linear_total_colisions;
 
-void quadratic_colision_map(hash_t hash[HASH_SIZE]){
+void linear_colision_map(hash_t hash[HASH_SIZE]){
         int i;
         for(i=0; i<HASH_SIZE; i++){
                 printf("Position %d: ", i);
@@ -15,36 +16,32 @@ void quadratic_colision_map(hash_t hash[HASH_SIZE]){
                         printf("+");
                         h = h->next;
                 }
-                for(j=0;j<quadratic_hash_colisions[i];j++){
+                for(j=0;j<hash_linear_colisions[i];j++){
                         printf("-");
-                        quadratic_total_colisions++;
+                        linear_total_colisions++;
                 }
                 printf("\n");
         }
-        printf("Total of colisions were: %d\n", quadratic_total_colisions);
+        printf("Total of colisions were: %d\n", linear_total_colisions);
 }
 
-int quadratic_find_magic(char *key, int step, int c1, int c2){
-        int magic_key = 0;
+int linear_find_magic(char *key, int step){
         int i;
+
+        int magic_key = step;
         for(i=0; i<strlen(key); i++){
                 magic_key += (unsigned int) key[i];
         }
-
-        /* add modifier */
-        magic_key += (c1 * step) + (c2 * step * step);
-
         return magic_key;
 }
 
-int quadratic_probing_hashfy(hash_t hash[HASH_SIZE], char *key){
+int hashfy_linear_probing(hash_t hash[HASH_SIZE], char *key){
         int hashed_key, hash_position;
         hash_t *h, *p;
         int i;
-        int c1 = 1; int c2 = 2;
 
         for(i=0;i<PROBING_TRIES;i++){
-                hashed_key = quadratic_find_magic(key, i, c1, c2);
+                hashed_key = linear_find_magic(key, i);
                 hash_position = hashed_key % (HASH_SIZE);
                 h = &hash[hash_position];
                 p = NULL;
@@ -63,7 +60,7 @@ int quadratic_probing_hashfy(hash_t hash[HASH_SIZE], char *key){
                                 return 0;
                         }
 
-                        quadratic_hash_colisions[hash_position]++;
+                        hash_linear_colisions[hash_position]++;
                 }
                 printf("  probing\n");
         }

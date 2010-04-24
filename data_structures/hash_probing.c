@@ -1,6 +1,6 @@
 #include "hash_probing.h"
-#include "linear_probing.h"
-#include "quadratic_probing.h"
+#include "hash_probing_linear.h"
+#include "hash_probing_quadratic.h"
 
 void show_usage(char *cmd){
         printf("Usage is: %s [-l|-q]\n", cmd);
