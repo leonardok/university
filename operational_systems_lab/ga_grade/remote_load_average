@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# simulate a remote load system monitor
+# it would output the following information
+
+echo "server: webprtal1"
+echo L1M: 1
+echo L5M: 5
+echo L15M: 6

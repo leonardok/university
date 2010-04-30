@@ -1,6 +1,7 @@
 #include "hash_probing.h"
 #include "hash_probing_linear.h"
 #include "hash_probing_quadratic.h"
+#include "hash_probing_double.h"
 
 void show_usage(char *cmd){
         printf("Usage is: %s [-l|-q]\n", cmd);
@@ -39,10 +40,8 @@ int hashfy(hash_t hash[HASH_SIZE], char *key){
                                 return 0;
                         }
 
-                        printf("  passou\n");
                         register_colision(hash_position);
                 }
-                printf("  probing\n");
         }
 
         /* could not put it by probing, so chain it */
@@ -92,6 +91,12 @@ int main(int argc, char **argv){
                         print_colision_map = &quadratic_colision_map;
                         register_colision  = &quadratic_register_colision;
                         break;
+                case 'd':
+                        magic = &double_find_magic;
+                        print_colision_map = &double_colision_map;
+                        register_colision  = &double_register_colision;
+                        break;
+
                 default: show_usage(argv[0]);;
         }
 
