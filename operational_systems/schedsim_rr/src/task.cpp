@@ -7,4 +7,12 @@
  *
  */
 
+#include <iostream>
 #include "task.h"
+
+
+int task_class::get_next_ready(){
+	printf("test");
+	
+	return 0;
+}

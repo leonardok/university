@@ -9,7 +9,8 @@
 /* Begin PBXBuildFile section */
 		0487C63D11800DAA007B9400 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0487C63A11800DAA007B9400 /* main.cpp */; };
 		0487C63E11800DAA007B9400 /* scheduler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0487C63B11800DAA007B9400 /* scheduler.cpp */; };
-		0487C63F11800DAA007B9400 /* task.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0487C63C11800DAA007B9400 /* task.cpp */; };
+		049D3D6C11A9A55C0099B801 /* task.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0487C63C11800DAA007B9400 /* task.cpp */; };
+		049D3E4411A9CC9D0099B801 /* task_queues.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 049D3E4311A9CC9D0099B801 /* task_queues.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		0487C63B11800DAA007B9400 /* scheduler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scheduler.cpp; path = src/scheduler.cpp; sourceTree = "<group>"; };
 		0487C63C11800DAA007B9400 /* task.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = task.cpp; path = src/task.cpp; sourceTree = "<group>"; };
 		0487C64011800DBD007B9400 /* readme.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = readme.rtf; path = doc/readme.rtf; sourceTree = "<group>"; };
+		049D3E4311A9CC9D0099B801 /* task_queues.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = task_queues.cpp; path = src/task_queues.cpp; sourceTree = "<group>"; };
+		049D3E4B11A9CCCC0099B801 /* task_queues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = task_queues.h; path = include/task_queues.h; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* schedsim_rr */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = schedsim_rr; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -50,6 +53,7 @@
 			children = (
 				0487C63811800D9B007B9400 /* scheduler.h */,
 				0487C63911800D9B007B9400 /* task.h */,
+				049D3E4B11A9CCCC0099B801 /* task_queues.h */,
 			);
 			name = Include;
 			sourceTree = "<group>";
@@ -71,6 +75,7 @@
 				0487C63A11800DAA007B9400 /* main.cpp */,
 				0487C63B11800DAA007B9400 /* scheduler.cpp */,
 				0487C63C11800DAA007B9400 /* task.cpp */,
+				049D3E4311A9CC9D0099B801 /* task_queues.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -136,7 +141,8 @@
 			files = (
 				0487C63D11800DAA007B9400 /* main.cpp in Sources */,
 				0487C63E11800DAA007B9400 /* scheduler.cpp in Sources */,
-				0487C63F11800DAA007B9400 /* task.cpp in Sources */,
+				049D3D6C11A9A55C0099B801 /* task.cpp in Sources */,
+				049D3E4411A9CC9D0099B801 /* task_queues.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,19 +7,46 @@
  *
  */
 
-struct instructions_s {
-	char *command;
-	int  argument;
+using namespace std;
+
+#define MAX_PROCESSES 1024
+
+enum TASK_STATE {
+	TASK_READY,
+	TASK_WAINTING,
+	TASK_FINISH
 };
 
-typedef struct instructions_s instructions_t;
+enum INSTRUCTION_TYPE {
+	PROCESS,
+	SLEEP
+};
 
 
-struct task_s {
-	int priority;
-	int time_to_come;
-	int state;
+class task_class {
+/* class private methods */
+private:
+	struct instructions_s {
+		int duration;         // in seconds
+		int instruction;      // of INSTRUCTION_TYPE
+	};
+	typedef struct instructions_s instructions_t;
 	
-	instructions_t intructions;
+	int priority;	              // task priority 
+	int time_to_come;             // time when this task will arrive in the 
+	                              // timeline
+	int state;                    // ready, executing, waiting or finish
+	
+	int process_id;               // give it a pid
+	
+	int instruction_pointer;      // current instruction
+	instructions_t *instructions; // instructions array
+	
+	
+/* class public methods */
+public:
+	int get_next_ready();
+	int priority_inc();
+	int priority_dec();
+	int load_instructions();
 };
-typedef struct task_s task_t;
