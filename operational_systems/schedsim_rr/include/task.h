@@ -23,6 +23,7 @@ enum INSTRUCTION_TYPE {
 };
 
 
+
 class task_class {
 /* class private methods */
 private:
@@ -46,7 +47,8 @@ private:
 /* class public methods */
 public:
 	int get_next_ready();
-	int priority_inc();
-	int priority_dec();
-	int load_instructions();
+	int priority_inc(task_class *, int);
+	int priority_dec(task_class *, int);
+	int load_instructions(task_class *, char *);
 };
+

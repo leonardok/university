@@ -6,6 +6,9 @@
  *  Copyright 2010. All rights reserved.
  *
  */
+//this is for you to know where 80 colums are ending
+//123456789012345678901234567890123456789012345678901234567890123456789012345678
+
 
 #include "scheduler.h"
 
@@ -109,7 +112,7 @@ int schedule_class::task_state(task_class *task){
  *   boolean value (true or false) corresponding the logical value of having
  *   successfully scheduled.
  */
-int schedule_class::do_scheduling(){
+int schedule_class::do_scheduling(task_queues_class ready_queue, task_class *task){
 	return 0;
 }
 
@@ -128,7 +131,8 @@ int schedule_class::do_scheduling(){
  *   boolean value (true or false) corresponding the logical value of having
  *   created or not the new task with the instructions inside the file.
  */
-int schedule_class::create_task(char *file_path, task_class *task){
+int schedule_class::create_task(char *file_path, 
+				task_class *task){
 	/* method variables */
 	string line;
 	char   c;

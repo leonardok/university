@@ -1,5 +1,5 @@
 /*
- *  main.c
+ *  main.cpp
  *  schedsim_rr
  *
  *  Created by Leonardo Korndorfer on 5/15/10.
@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include "task_queues.h"
-#include "task.h"
 
 using namespace std;
 

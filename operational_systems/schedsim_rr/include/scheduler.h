@@ -3,18 +3,14 @@
  *  schedsim_rr
  *
  *  Created by Leonardo Korndorfer on 4/22/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
+ *  Copyright 2010. All rights reserved.
  *
  */
 
-//this is for you to know where 80 colums are ending
-//123456789012345678901234567890123456789012345678901234567890123456789012345678
-
+using namespace std;
 
 #include <fstream>
-#include "task.h"
-
-using namespace std;
+#include "task_queues.h"
 
 class schedule_class {
 /* class private methods */		
@@ -29,7 +25,7 @@ private:
 /* class public methods */
 public:
 	/* scheduler related methods */
-	int do_scheduling();
+	int do_scheduling(task_queues_class, task_class *);
 	
 	/* task related methods */
 	int create_task(char *, task_class *);
