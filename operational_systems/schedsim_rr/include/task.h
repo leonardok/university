@@ -7,19 +7,22 @@
  *
  */
 
+#include <fstream>
+
 using namespace std;
 
 #define MAX_PROCESSES 1024
 
 enum TASK_STATE {
-	TASK_READY,
-	TASK_WAINTING,
-	TASK_FINISH
+	TASK_STATE_READY,
+	TASK_STATE_WAINTING,
+	TASK_STATE_FINISHED
 };
 
 enum INSTRUCTION_TYPE {
-	PROCESS,
-	SLEEP
+	TASK_INSTRUCTION_EXECUTE,
+	TASK_INSTRUCTION_WAIT,
+	TASK_INSTRUCTION_FINISH
 };
 
 
@@ -27,11 +30,13 @@ enum INSTRUCTION_TYPE {
 class task_class {
 /* class private methods */
 private:
-	struct instructions_s {
-		int duration;         // in seconds
-		int instruction;      // of INSTRUCTION_TYPE
-	};
 	typedef struct instructions_s instructions_t;
+	struct instructions_s {
+		int argument;         // in seconds
+		int command;          // of INSTRUCTION_TYPE
+		
+		instructions_t *next;
+	};
 	
 	int priority;	              // task priority 
 	int time_to_come;             // time when this task will arrive in the 
@@ -41,7 +46,8 @@ private:
 	int process_id;               // give it a pid
 	
 	int instruction_pointer;      // current instruction
-	instructions_t *instructions; // instructions array
+	instructions_s instructions; // instructions array
+	instructions_t *current_instruction;
 	
 	
 /* class public methods */
@@ -49,6 +55,6 @@ public:
 	int get_next_ready();
 	int priority_inc(task_class *, int);
 	int priority_dec(task_class *, int);
-	int load_instructions(task_class *, char *);
+	int load_instructions(char *);
 };
 

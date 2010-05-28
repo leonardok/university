@@ -11,38 +11,65 @@
 
 
 #include <iostream>
-#include "task_queues.h"
+#include <unistd.h>
+
+#include "scheduler.h"
+
+#ifdef DEBUG
+#include "log.h"
+#endif
 
 using namespace std;
 
+
 void usage(void){
 	printf("USAGE:\n");
-	printf("\tcommand -ts [0-10] -tsk file1 [file2 .. filen] \n");
+	printf("\tcommand -q [0-10] -t file_1 [-t file_2 .. -t file_n] \n");
 	
-	exit(1);
+	return;
 }
 
 int main (int argc, char * const argv[]) {
 	/* local variables definition */
-	
-	int i;                             // generic counters
+	//int i;                             // generic counters
 	task_class tasks[MAX_PROCESSES];   // tasks list
+	int        tasks_counter;
 	
+	scheduler_class scheduler;
 	                                   // TODO: declare wainting queue
 					   // TODO: declare ready queue
 					   // TODO: declare finish queue
 					   // TODO: declare executing queue
-
 	
-	/* TODO: check if arguments passed by command-line are ok. If not,
-	         show usage */
-	/* TODO: if arguments ok load the instructions inside tasks */
-		
 	/* 
-	 * verify if the files passed are readble, and create the tasks
+	 * check if arguments passed by command-line are ok. If not, show usage 
 	 */
-	for (i=0; ; i++) {}
-	
+	printf("parsing arguments...\n");
+	if (argc < 3) {
+		usage();
+	}
+	else {
+		int c;
+
+		while ((c = getopt(argc, argv, ":q:t:")) != -1) {
+			switch (c) {
+				case 'q':
+					scheduler.set_time_quantum(atoi(optarg));
+					break;
+				case 't':
+					printf("\tcreate new task from file %s\n", optarg);
+					tasks[tasks_counter].load_instructions(optarg);
+					tasks_counter++;
+					break;
+
+				case '?':
+				default:
+					usage();
+					break;
+			}
+		}
+	}
+	printf("\n");
 		
 	printf("we are scheduling!\n");
 	

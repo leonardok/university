@@ -12,7 +12,7 @@ using namespace std;
 #include <fstream>
 #include "task_queues.h"
 
-class schedule_class {
+class scheduler_class {
 /* class private methods */		
 private:
 	int quantum;
@@ -30,5 +30,6 @@ public:
 	/* task related methods */
 	int create_task(char *, task_class *);
 	
-	
+	/* misc class methods */
+	void set_time_quantum(int);
 };

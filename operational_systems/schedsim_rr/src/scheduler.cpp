@@ -1,5 +1,5 @@
 /*
- *  class_scheduler.cpp
+ *  scheduler.cpp
  *  schedsim_rr
  *
  *  Created by Leonardo Korndorfer on 4/22/10.
@@ -17,7 +17,7 @@
  */
 
 /*
- * schedule_class::task_to_ready
+ * scheduler_class::task_to_ready
  *
  * overview:
  *   change state of the task pointed by arg 1 to "ready"
@@ -28,7 +28,7 @@
  * output:
  *   true or false
  */
-int schedule_class::task_to_ready(task_class *task){
+int scheduler_class::task_to_ready(task_class *task){
 	return 0;
 }
 
@@ -45,12 +45,12 @@ int schedule_class::task_to_ready(task_class *task){
  *   true or false
  */
 
-int schedule_class::task_to_waiting(task_class *task){
+int scheduler_class::task_to_waiting(task_class *task){
 	return 0;
 }
 
 /*
- * schedule_class::task_preempt
+ * scheduler_class::task_preempt
  *
  * overview:
  *   do the preemption of a task. this will happen when there is a running task
@@ -68,12 +68,12 @@ int schedule_class::task_to_waiting(task_class *task){
  * output:
  *   true or false
  */
-int schedule_class::task_preempt(task_class *task){
+int scheduler_class::task_preempt(task_class *task){
 	return 0;
 }
 
 /*
- * schedule_class::task_state
+ * scheduler_class::task_state
  *
  * overview:
  *   get the task_state
@@ -84,8 +84,8 @@ int schedule_class::task_preempt(task_class *task){
  * output:
  *   task state based on the enum TASK_STATES.
  */
-int schedule_class::task_state(task_class *task){
-	return TASK_FINISH;
+int scheduler_class::task_state(task_class *task){
+	return TASK_STATE_FINISHED;
 }
 
 
@@ -95,7 +95,7 @@ int schedule_class::task_state(task_class *task){
 
 
 /*
- * schedule_class::do_scheduling
+ * scheduler_class::do_scheduling
  *
  * overview:
  *   does the scheduling. look up in the ready list who is elegible to get
@@ -112,12 +112,12 @@ int schedule_class::task_state(task_class *task){
  *   boolean value (true or false) corresponding the logical value of having
  *   successfully scheduled.
  */
-int schedule_class::do_scheduling(task_queues_class ready_queue, task_class *task){
+int scheduler_class::do_scheduling(task_queues_class ready_queue, task_class *task){
 	return 0;
 }
 
 /*
- * schedule_class::create_task
+ * scheduler_class::create_task
  *
  * overview:
  *   creates a task, then it loads the commands (content of the file) into and 
@@ -131,7 +131,7 @@ int schedule_class::do_scheduling(task_queues_class ready_queue, task_class *tas
  *   boolean value (true or false) corresponding the logical value of having
  *   created or not the new task with the instructions inside the file.
  */
-int schedule_class::create_task(char *file_path, 
+int scheduler_class::create_task(char *file_path, 
 				task_class *task){
 	/* method variables */
 	string line;
@@ -154,6 +154,28 @@ int schedule_class::create_task(char *file_path,
 }
 
 
+
+/*
+ * scheduler_class::set_time_quantum
+ *
+ * overview:
+ *   sets a new time quantum for the scheduler.
+ *
+ * input:
+ *   1. intger time quantum
+ *
+ * output:
+ *   void.
+ */
+void scheduler_class::set_time_quantum(int new_quantum){
+	this->quantum = new_quantum;
+	
+#ifdef DEBUG
+	printf("new time quantum is %d\n", 
+	       this->quantum = new_quantum);
+#endif
+	return;
+}
 
 
 

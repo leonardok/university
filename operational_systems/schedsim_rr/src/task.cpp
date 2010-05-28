@@ -88,8 +88,53 @@ int task_class::priority_dec(task_class *task,
  *   true if could load the instructions
  *   false if could not
  */
-int task_class::load_instructions(task_class *task, 
-				  char *file_path){
+int task_class::load_instructions(char *file_path){
+#ifdef DEBUG
+	printf("\t\tloading instructions\n");
+#endif
+	fstream fp;
+	
+	fp.open(file_path, ios::in);
+	if(!fp){
+		printf("not possible to read from file\n");
+		return false;
+	}
+	
+	char buff[512];
+	while (fp >> buff) {
+		if (buff[0] == '#' || strlen(buff) <= 1) {
+			continue;
+		}
+		
+		
+		/* new instruction */
+		instructions_s new_instruction;
+		
+		if (!strcmp(buff, "time_to_come")) {
+			printf("\t\ttime to come is     ", atoi(buff));
+		}
+		else if (!strcmp(buff, "execute")) {
+			printf("\t\texecute instruction ");
+			new_instruction.command  = TASK_INSTRUCTION_EXECUTE;
+		}
+		else if (!strcmp(buff, "wait")) {
+			printf("\t\twait instruction    ");
+			new_instruction.command  = TASK_INSTRUCTION_WAIT;
+		}
+		else {
+			printf("\t\tfinish instruction  ");
+			new_instruction.command  = TASK_INSTRUCTION_FINISH;
+		}
+		fp >> buff;
+		new_instruction.argument = atoi(buff);
+		printf("%s\n", buff);
+
+
+		
+	}
+	printf("\n");
+
+	
 	return true;
 }
 

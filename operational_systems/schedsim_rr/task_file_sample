@@ -1,0 +1,18 @@
+# the task file accept comments
+
+# define the time the command will come
+time_to_come 0
+
+# valid instructions are: execute, wait and finish
+# note that the process will end whenever it find an
+# "finish" instruction
+
+# execute <how long>
+# wait    <how long>
+# finish  <termination code>
+
+execute 3
+wait    2
+execute 5
+wait    1
+finish  0
