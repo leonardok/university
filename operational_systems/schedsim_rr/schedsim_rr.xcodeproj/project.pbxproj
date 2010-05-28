@@ -3,14 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		044F7D0B11AF75DC00399191 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 044F7D0A11AF75DC00399191 /* log.cpp */; };
 		0487C63D11800DAA007B9400 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0487C63A11800DAA007B9400 /* main.cpp */; };
 		0487C63E11800DAA007B9400 /* scheduler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0487C63B11800DAA007B9400 /* scheduler.cpp */; };
 		049D3D6C11A9A55C0099B801 /* task.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0487C63C11800DAA007B9400 /* task.cpp */; };
 		049D3E4411A9CC9D0099B801 /* task_queues.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 049D3E4311A9CC9D0099B801 /* task_queues.cpp */; };
+		04D1F20A11AF6A57008B23C5 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 04D1F20911AF6A57008B23C5 /* Makefile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +28,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		044F7D0A11AF75DC00399191 /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log.cpp; path = src/log.cpp; sourceTree = "<group>"; };
+		044F7D0C11AF75E700399191 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log.h; path = include/log.h; sourceTree = "<group>"; };
 		0487C63811800D9B007B9400 /* scheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scheduler.h; path = include/scheduler.h; sourceTree = "<group>"; };
 		0487C63911800D9B007B9400 /* task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = task.h; path = include/task.h; sourceTree = "<group>"; };
 		0487C63A11800DAA007B9400 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<group>"; };
@@ -34,6 +38,7 @@
 		0487C64011800DBD007B9400 /* readme.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = readme.rtf; path = doc/readme.rtf; sourceTree = "<group>"; };
 		049D3E4311A9CC9D0099B801 /* task_queues.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = task_queues.cpp; path = src/task_queues.cpp; sourceTree = "<group>"; };
 		049D3E4B11A9CCCC0099B801 /* task_queues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = task_queues.h; path = include/task_queues.h; sourceTree = "<group>"; };
+		04D1F20911AF6A57008B23C5 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* schedsim_rr */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = schedsim_rr; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -51,6 +56,7 @@
 		0487C5D9117FFED6007B9400 /* Include */ = {
 			isa = PBXGroup;
 			children = (
+				044F7D0C11AF75E700399191 /* log.h */,
 				0487C63811800D9B007B9400 /* scheduler.h */,
 				0487C63911800D9B007B9400 /* task.h */,
 				049D3E4B11A9CCCC0099B801 /* task_queues.h */,
@@ -61,6 +67,7 @@
 		08FB7794FE84155DC02AAC07 /* schedsim_rr */ = {
 			isa = PBXGroup;
 			children = (
+				04D1F20911AF6A57008B23C5 /* Makefile */,
 				0487C5D9117FFED6007B9400 /* Include */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				C6859E8C029090F304C91782 /* Documentation */,
@@ -72,6 +79,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				044F7D0A11AF75DC00399191 /* log.cpp */,
 				0487C63A11800DAA007B9400 /* main.cpp */,
 				0487C63B11800DAA007B9400 /* scheduler.cpp */,
 				0487C63C11800DAA007B9400 /* task.cpp */,
@@ -122,8 +130,11 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = NO;
+			};
 			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "schedsim_rr" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			hasScannedForEncodings = 1;
 			mainGroup = 08FB7794FE84155DC02AAC07 /* schedsim_rr */;
 			projectDirPath = "";
@@ -143,6 +154,8 @@
 				0487C63E11800DAA007B9400 /* scheduler.cpp in Sources */,
 				049D3D6C11A9A55C0099B801 /* task.cpp in Sources */,
 				049D3E4411A9CC9D0099B801 /* task_queues.cpp in Sources */,
+				04D1F20A11AF6A57008B23C5 /* Makefile in Sources */,
+				044F7D0B11AF75DC00399191 /* log.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,6 +175,14 @@
 					"_GLIBCXX_DEBUG=1",
 					"_GLIBCXX_DEBUG_PEDANTIC=1",
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_NAME = schedsim_rr;
 			};
