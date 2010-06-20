@@ -1,0 +1,9 @@
+143.100.45.1 host_name: bluemoon
+143.100.45.2 host_name: darkangel
+143.100.90.0 subnet_name: lollipop
+143.100.45.0 subnet_name: grow
+143.100.90.11 host_name: mariobros
+143.100.90.23 host_name: luigi
+143.100.75.0 subnet_name: stars
+143.100.45.3 host_name: brick
+143.100.75.7 host_name: lawn
