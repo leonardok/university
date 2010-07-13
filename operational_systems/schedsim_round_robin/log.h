@@ -7,7 +7,6 @@
  *
  */
 
-using namespace std;
 
 enum LOG_LEVEL {
 	LOG_DEBUG,
@@ -16,7 +15,5 @@ enum LOG_LEVEL {
 	LOG_CRITICAL		
 };
 
-class log_class {
-public:
-	void write(char*, int);
-};
+
+void log_write(const char*, int, int, ...);

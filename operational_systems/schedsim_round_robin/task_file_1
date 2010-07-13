@@ -1,0 +1,7 @@
+time_to_come 5
+
+execute 3
+wait    2
+execute 5
+wait    1
+finish  0
