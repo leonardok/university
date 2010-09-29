@@ -1,0 +1,46 @@
+PARSER_BEGIN(Parser)
+
+public class Parser{
+
+  public static void main(String args[]) throws ParseException {
+    Parser parser = new Parser(System.in);
+    parser.Start();
+  }
+
+}
+
+PARSER_END(Parser)
+
+SKIP: {" "}
+SKIP:{ "\n"
+     | "\r"
+     | "\r\n" 
+     }
+TOKEN:
+{
+	<HTML_TAG: "<"(["/","a"-"z"])?(["a"-"z","0"-"9"])*">" > |
+	<TEXT:     (~["\r","\n", " ", "<", ">"])+ > 
+}
+
+void Start() :
+{ int count = 0; }
+{
+  (html_tag())* (text())* <EOF>
+  {}
+}
+
+void html_tag() :
+{ StringBuffer tag = new StringBuffer(); }
+{
+  <HTML_TAG> 
+  [ html_tag() | text() ]
+}
+
+void text() :
+{ StringBuffer text = new StringBuffer(); }
+{
+  <TEXT> 
+  { System.out.println("found " + text.append(token.image)); }
+  [ html_tag() | text() ]
+}
+

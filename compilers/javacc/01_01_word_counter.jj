@@ -1,0 +1,39 @@
+/* this program will count the number of words in a file */
+
+PARSER_BEGIN(word_counter)
+
+public class word_counter {
+
+  public static void main(String args[]) throws ParseException {
+    word_counter parser = new word_counter(System.in);
+    parser.Start();
+  }
+
+}
+
+PARSER_END(word_counter)
+
+SKIP: {" "}
+SKIP:{ "\n"
+     | "\r"
+     | "\r\n" 
+     }
+TOKEN:
+{
+	<WORD: (["a"-"z"])+>
+}
+
+void Start() :
+{ int count = 0; }
+{
+  count=word() <EOF>
+  { System.out.println("# de palavras: " + count); }
+}
+
+int word() :
+{ int word_count = 0; }
+{
+  <WORD> [ word_count=word() ]
+  { return ++word_count; }
+}
+

@@ -1,0 +1,54 @@
+/* this program will print the number found on the stdin */
+
+PARSER_BEGIN(html_tag_print)
+
+public class html_tag_print {
+
+  public static void main(String args[]) throws ParseException {
+    html_tag_print parser = new html_tag_print(System.in);
+    parser.Start();
+  }
+
+}
+
+PARSER_END(html_tag_print)
+
+SKIP: {" "}
+SKIP:{ "\n"
+     | "\r"
+     | "\r\n" 
+     }
+TOKEN:
+{
+	<WORD:     (["a"-"z"])+> |
+	<NUM:      (["0"-"9"])+> |
+	<HTML_TAG: "<"(["/","a"-"z"])?(["a"-"z","0"-"9"])*">" >
+}
+
+void Start() :
+{ int count = 0; }
+{
+  (num())* (word())* (html_tag())* <EOF>
+  {}
+}
+
+void word() :
+{}
+{
+  <WORD> [ num() | word() | html_tag() ]
+}
+
+void num() :
+{ StringBuffer number = new StringBuffer(); }
+{
+  <NUM> [ num() | word() | html_tag() ]
+}
+
+void html_tag() :
+{ StringBuffer tag = new StringBuffer(); }
+{
+  <HTML_TAG> 
+  { System.out.println("tag found: " + tag.append(token.image)); }
+  [ num() | word() | html_tag() ]
+}
+

@@ -1,0 +1,47 @@
+/* this program will print the number found on the stdin */
+
+PARSER_BEGIN(num_print)
+
+public class num_print {
+
+  public static void main(String args[]) throws ParseException {
+    num_print parser = new num_print(System.in);
+    parser.Start();
+  }
+
+}
+
+PARSER_END(num_print)
+
+SKIP: {" "}
+SKIP:{ "\n"
+     | "\r"
+     | "\r\n" 
+     }
+TOKEN:
+{
+	<WORD: (["a"-"z"])+> |
+	<NUM:  (["0"-"9"])+>
+}
+
+void Start() :
+{ int count = 0; }
+{
+  (num())* (word())* <EOF>
+  {}
+}
+
+void word() :
+{}
+{
+  <WORD> [ num() | word() ]
+}
+
+void num() :
+{ StringBuffer number = new StringBuffer(); }
+{
+  <NUM> 
+  { System.out.println("o numero eh: " + number.append(token.image)); }
+  [ num() | word() ]
+}
+
