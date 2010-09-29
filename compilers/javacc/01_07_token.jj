@@ -1,0 +1,76 @@
+PARSER_BEGIN(Parser)
+
+public class Parser{
+
+  public static void main(String args[]) throws ParseException {
+    Parser parser = new Parser(System.in);
+    parser.Start();
+  }
+
+}
+
+PARSER_END(Parser)
+
+SKIP: {" "}
+SKIP:{ "\n"
+     | "\r"
+     | "\r\n" 
+     }
+TOKEN:
+{
+	<RESERVED_WORD: "int"|"for"|"do"|"if"|"then"|"else"|"while" > |
+	<FLOAT:         (["0"-"9"])+"."(["0"-"9"])+ >                 |
+	<INTEGER:       (["0"-"9"])+ >                                |
+	<ID:            (["a"-"z"]){1}(["a"-"z","0"-"9"])* >
+}
+
+void Start() :
+{}
+{
+  (reserved_word())* (kind_float())* (kind_integer())* (id())* <EOF>
+  {}
+}
+
+/*
+void text() :
+{}
+{
+  <TEXT> 
+  { System.out.println("not recognized!"); }
+  [ Start() ]
+}
+*/
+
+void reserved_word() :
+{ StringBuffer text = new StringBuffer(); }
+{
+  <RESERVED_WORD> 
+  { System.out.println("found reserved word " + text.append(token.image)); }
+  [ Start() ]
+}
+
+void kind_float() :
+{ StringBuffer text = new StringBuffer(); }
+{
+  <FLOAT> 
+  { System.out.println("found float " + text.append(token.image)); }
+  [ Start() ]
+}
+
+
+void kind_integer() :
+{ StringBuffer text = new StringBuffer(); }
+{
+  <INTEGER> 
+  { System.out.println("found integer " + text.append(token.image)); }
+  [ Start() ]
+}
+
+void id() :
+{ StringBuffer text = new StringBuffer(); }
+{
+  <ID> 
+  { System.out.println("found identifier " + text.append(token.image)); }
+  [ Start() ]
+}
+

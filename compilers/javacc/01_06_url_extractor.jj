@@ -1,0 +1,46 @@
+PARSER_BEGIN(Parser)
+
+public class Parser{
+
+  public static void main(String args[]) throws ParseException {
+    Parser parser = new Parser(System.in);
+    parser.Start();
+  }
+
+}
+
+PARSER_END(Parser)
+
+SKIP: {" "}
+SKIP:{ "\n"
+     | "\r"
+     | "\r\n" 
+     }
+TOKEN:
+{
+	<URL:  "http"(["s"])?"://"(["a"-"z","0"-"9","-","."])+ > |
+	<TEXT: (~["\r","\n", " ", "<", ">"])+ > 
+}
+
+void Start() :
+{}
+{
+  (url())* (text())* <EOF>
+  {}
+}
+
+void url() :
+{ StringBuffer text = new StringBuffer(); }
+{
+  <URL> 
+  { System.out.println("found " + text.append(token.image)); }
+  [ url() | text() ]
+}
+
+void text() :
+{}
+{
+  <TEXT> 
+  [ url() | text() ]
+}
+

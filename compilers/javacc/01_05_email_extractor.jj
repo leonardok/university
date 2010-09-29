@@ -1,0 +1,46 @@
+PARSER_BEGIN(Parser)
+
+public class Parser{
+
+  public static void main(String args[]) throws ParseException {
+    Parser parser = new Parser(System.in);
+    parser.Start();
+  }
+
+}
+
+PARSER_END(Parser)
+
+SKIP: {" "}
+SKIP:{ "\n"
+     | "\r"
+     | "\r\n" 
+     }
+TOKEN:
+{
+	<EMAIL: ([".","_","a"-"z","0"-"9"])+"@"(["a"-"z","0"-"9"])+"."(["a"-"z"])+("."(["a"-"z"]){2})? > |
+	<TEXT:  (~["\r","\n", " ", "<", ">"])+ > 
+}
+
+void Start() :
+{ int count = 0; }
+{
+  (email())* (text())* <EOF>
+  {}
+}
+
+void email() :
+{ StringBuffer text = new StringBuffer(); }
+{
+  <EMAIL> 
+  { System.out.println("found " + text.append(token.image)); }
+  [ email() | text() ]
+}
+
+void text() :
+{ StringBuffer text = new StringBuffer(); }
+{
+  <TEXT> 
+  [ email() | text() ]
+}
+
