@@ -19,19 +19,19 @@ IDENTIFIER 	[a-z][_a-z0-9]*
 "="		{return '=';}
 "end"		{return T_END;}
 {VARIABLE_TYPE} {
-		yylval.value_string = malloc(sizeof(char) * (yyleng + 1)); 
-		strncpy(yylval.value_string, yytext, yyleng);
-		yylval.value_string[yyleng+1] = '\0';
-		return T_VARIABLE_TYPE;
-		}
-{IDENTIFIER}	{
-		yylval.value_string = malloc(sizeof(char) * (yyleng + 1)); 
-		strncpy(yylval.value_string, yytext, yyleng);
-		yylval.value_string[yyleng+1] = '\0';
-		return T_IDENTIFIER;
-		}
-[\n]		{}
-[ \t]+	 	{}
-. 		{}
+	yylval.value_string = malloc(sizeof(char) * (yyleng + 1)); 
+	strncpy(yylval.value_string, yytext, yyleng);
+	yylval.value_string[yyleng+1] = '\0';
+	return T_VARIABLE_TYPE;
+	}
+{IDENTIFIER} {
+	yylval.value_string = malloc(sizeof(char) * (yyleng + 1)); 
+	strncpy(yylval.value_string, yytext, yyleng);
+	yylval.value_string[yyleng+1] = '\0';
+	return T_IDENTIFIER;
+	}
+[\n]	{}
+[ \t]+	{}
+. 	{}
 
 %%
