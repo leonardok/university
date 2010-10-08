@@ -65,12 +65,84 @@ Este trabalho tem como objetivo o design e descrição da proposta de implementaçã
 
 \section{Linguagem Origem}
 
-A linguagem origem para o nosso trabalho sera ruby, por se tratar de uma 
-linguagem nova e com bastante ascencao. Outro fator de motivacao e a nao
-existencia de compiladores para a linguagem, que e interpretada, o que
-leva o trabalho a um objetivo maior de talvez produzir um ponto de partida
-para um compilador para a linguagem, podendo contribuir com a comunidade 
-open source.
+A linguagem origem para o nosso trabalho sera um subconjunto da linguagem Ruby. Levamos em consideração para a especificação da linguagem a ser suportada os seguntes critérios:
+\begin{itemize}
+\item Tempo para a execução do projeto;
+\item Objetivo do trabalho;
+\item Complexidade de implementação.
+\end{itemize}
+
+Baseando-se nesses pontos, objetivamos chegar a um subconjunto da linguagem Ruby que iremos implementar em nosso tradutor. Para isso, respeitando as aspirações do trabalho, definimos as principais limitações do tradutor, features da linguagem que não serão implementadas:
+\begin{itemize}
+\item Herança;
+\item Sobrecarga;
+\item Passagem de código por parâmetro;
+\item Bibliotecas da linguagem.
+\end{itemize}
+
+Com isso, depois de fazer uma análise sobre as features da linguagem, chegamos a uma lista de comentados que serão implementados. Essa relação de itens baseia-se nos mesmos critérios descritos no primeiro raciocínio.
+\begin{itemize}
+\item Comentários
+\item Variáveis
+	\begin{itemize}
+		\item Locais
+		\item De Classe
+		\item Globais
+		\item Constantes
+	\end{itemize}
+
+\item Desvio Condicional
+	\begin{itemize}
+		\item if condição
+		\item if condição .. else .. end
+		\item if condição .. elsif .. else .. end
+		\item case 
+	\end{itemize}
+
+\item Laços de repetição e controle de laços
+	\begin{itemize}
+		\item while
+		\item for
+		\item until
+		\item break
+		\item next
+		\item redo
+	\end{itemize}
+
+\item Blocos
+  O conceito de Bloco em Ruby é um chunk de código que pode ser chamado a qualquer momento durante a execução de um programa.
+\item Iteradores
+	\begin{itemize}
+		\item each
+	\end{itemize}
+
+\item File I/O
+	\begin{itemize}
+		\item puts
+		\item putc
+		\item print
+		\item gets
+		\item abrir e fechar arquivos
+	\end{itemize}
+
+\end{itemize}
+
+
+Todos outros comandos da linguagem Ruby que não estao presentes na lista anterior não fazem parte do escopo desta implementação. Dentre os comandos que NÃO farão parte desta implementação destacam-se:
+\begin{itemize}
+	\item {Variáveis de instancia}
+	\item {Variáveis do tipo Hash}
+	\item {retry}\\
+		Exeption handling inside loops
+	\item {unless}\\
+		Desvio condicional
+	\item {Blocos de BEGIN e END}\\
+		São blocos de código executado enquanto o arquivo é carregado.
+	\item {Modules}\\
+		São agrupamentos de métodos, classes e constantes.
+	\item {Mixins}\\
+		É a forma que ruby usa como contrapartida do fato de não suportar herança multipla.
+\end{itemize}
 
 
 \section{Linguagem Alvo}
@@ -79,10 +151,6 @@ A liguagem alvo para o nosso tradutor - linguagem de output - sera C, por ser
 uma linguagem que possui bons compiladores e rapidos executaveis. A linguagem
 tambem e dominada pelo grupo.
 
-Limitacoes
-biliotecas
-acesso a atributos e funcoes
-passagem de codigo via parametro
 
 
 \section{Exemplo de Entrada e Saida Esperadas}
@@ -146,14 +214,7 @@ int main(int argc, char **argv)
 Bison
 
 \section{References}
-
-Bibliographic references must be unambiguous and uniform.  We recommend giving
-the author names references in brackets, e.g. \cite{knuth:84},
-\cite{boulic:91}, and \cite{smith:99}.
-
-The references must be listed using 12 point font size, with 6 points of space
-before each reference. The first line of each reference should not be
-indented, while the subsequent should be indented by 0.5 cm.
+http://www.tutorialspoint.com/ruby/
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
