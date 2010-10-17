@@ -20,7 +20,7 @@ typedef struct structure_huffman_tree type_ahuffman_tree;
 struct  structure_huffman_tree 
 {
     char value;
-    int  times;
+    int  weight;
     
     type_ahuffman_tree *parent;
     type_ahuffman_tree *l_child;

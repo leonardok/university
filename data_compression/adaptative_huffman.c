@@ -83,6 +83,19 @@ int ahuffman_rotate_tree(void)
 }
 
 
+int check_tree_balance(void)
+{
+
+	return 1;
+}
+
+
+int get_node_weight(int height, type_ahuffman_tree *node)
+{
+	return 0;
+}
+
+
 /**
  * TODO write this header
  *
@@ -102,7 +115,7 @@ int ahuffman_rotate_tree(void)
  *    example_nada(3); // Do nothing 3 times.
  * @endcode
  */
-int ahuffman_new_node(char c, int times, type_ahuffman_tree **new_node)
+int ahuffman_new_node(char c, int weight, type_ahuffman_tree **new_node)
 {
 	//printf("ahuffman_new_node - new node is %d\n", c);
 
@@ -112,8 +125,8 @@ int ahuffman_new_node(char c, int times, type_ahuffman_tree **new_node)
 	node->parent  = NULL;
 	node->l_child = NULL;
 	node->r_child = NULL;
-	node->value = c;
-	node->times = times;
+	node->value  = c;
+	node->weight = weight;
 	
 	*new_node = node;
 
@@ -328,7 +341,7 @@ void increment_counters(int path)
 
 	while (path && (path != 0xFF))
 	{
-		node->times++;
+		node->weight++;
 		if ((path & 1) == 0)
 			node = node->l_child;
 		else
@@ -336,6 +349,7 @@ void increment_counters(int path)
 
 		path >>= 1;
 	}
+	node->weight++;
 }
 
 
@@ -372,13 +386,13 @@ int ahuffman_encode(char *s)
 		printf("ahuffman_encode - encoding char '%c'\n", s[i]);
 
 		/* if node not found, add it to the tree */
-		if ((code = ahuffman_search(ahuffman_tree, s[i], 0)) == NODE_NOT_FOUND)
+		if ((code = ahuffman_search(ahuffman_tree, s[i], 0xff)) == NODE_NOT_FOUND)
 		{
 			printf("ahuffman_encode - node not found, adding it\n");
 			ahuffman_add_node(s[i]);
 
 			/* get code again */
-			code = ahuffman_search(ahuffman_tree, s[i], 0);
+			code = ahuffman_search(ahuffman_tree, s[i], 0xff);
 		}
 		increment_counters(code);
 		printf("code for %c is %x\n\n", s[i], code);
