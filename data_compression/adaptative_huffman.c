@@ -244,8 +244,8 @@ int ahuffman_add_node(char c)
 		//printf("\tahuffman_add_node - adding first element\n");
 		nyt_node = ahuffman_tree;
 
-		ahuffman_new_node(c,    1, &new_node);
-		ahuffman_new_node(NODE, 1, &root_node);
+		ahuffman_new_node(c,    0, &new_node);
+		ahuffman_new_node(NODE, 0, &root_node);
 
 		root_node->l_child = nyt_node;
 		root_node->r_child = new_node;
@@ -322,6 +322,42 @@ int ahuffman_add_node(char c)
  *    example_nada(3); // Do nothing 3 times.
  * @endcode
  */
+void increment_counters(int path)
+{
+	type_ahuffman_tree *node = ahuffman_tree;
+
+	while (path && (path != 0xFF))
+	{
+		node->times++;
+		if ((path & 1) == 0)
+			node = node->l_child;
+		else
+			node = node->r_child;
+
+		path >>= 1;
+	}
+}
+
+
+/**
+ * TODO write this header
+ *
+ * @name    Example API Actions
+ * @brief   Example actions available.
+ * @ingroup example
+ *
+ * This API provides certain actions as an example.
+ *
+ * @param [in] repeat  Number of times to do nothing.
+ *
+ * @retval TRUE   Successfully did nothing.
+ * @retval FALSE  Oops, did something.
+ *
+ * Example Usage:
+ * @code
+ *    example_nada(3); // Do nothing 3 times.
+ * @endcode
+ */
 int ahuffman_encode(char *s)
 {
 	int i;
@@ -344,6 +380,7 @@ int ahuffman_encode(char *s)
 			/* get code again */
 			code = ahuffman_search(ahuffman_tree, s[i], 0);
 		}
+		increment_counters(code);
 		printf("code for %c is %x\n\n", s[i], code);
 	}
 
