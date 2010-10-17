@@ -1,0 +1,222 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
+
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage{textcomp}
+%\definecolor{listinggray}{gray}{0.9}
+%\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\lstset{
+	%backgroundcolor=\color{lbcolor},
+	tabsize=4,
+	rulecolor=,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={1.5\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=true,
+	breaklines=true,
+	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	%frame=single,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941}
+}
+
+\usepackage[brazil]{babel}   
+\usepackage[latin1]{inputenc}  
+
+     
+\sloppy
+
+\title{Instructions for Authors of SBC Conferences\\ Papers and Abstracts}
+
+\author{Aristeu F. de Oliveira Junior\inst{1}, Leonardo R. Korndorfer\inst{1}, Thais Dyana M. Souza\inst{1} }
+
+
+\address{
+  UNISINOS\\ 
+  Av. Unisinos, 950 -- B. Cristo Rei, CEP 93.022-000 -- São Leopoldo (RS)
+  \email{\{aristeuoliveirajunior,leokorndorfer,thaisdms\}@gmail.com}
+}
+
+\begin{document} 
+
+\maketitle
+
+\begin{abstract}
+	Ruby is an interpreted language that has a growing user base. It is used for a wide variety of applications such as web applications, server administration scripts, desktop applications and so on. Ruby growth is attributed to the nice language syntax, short learning curve and other subjective attributes like a friendly community.
+This work intend to design and describe the implementation proposal for a ruby to C translator, using the thechniques presented in class, that aim to make a start point for fast code to be run where you need more performance using the ruby features and the fast production time.
+\end{abstract}
+     
+\begin{resumo} 
+	Ruby é uma linguagem interpretada que tem uma base de usuários em expansão. A linguagem é usada para uma grande variedade de aplicações como aplicativos para a web, script para administração de servidores, aplicativos para desktop e outros. O crescimento do ruby é atribuído a boa sintaxe da linguagem, pequena curva de aprendizado e outros pontos subjetivos, como uma comunidade amigável.
+Este trabalho tem como objetivo o design e descrição da proposta de implementação para um tradutor de ruby para C, usando as técnicas apresentadas em aula, que objetiva um ponto de partida para que código mais rápido possa ser executado onde se necessita mais performance, mas usando as qualidades e rapidez de produção de ruby.
+\end{resumo}
+
+
+\section{Linguagem Origem}
+
+A linguagem origem para o nosso trabalho sera um subconjunto da linguagem Ruby. Levamos em consideração para a especificação da linguagem a ser suportada os seguntes critérios:
+\begin{itemize}
+\item Tempo para a execução do projeto;
+\item Objetivo do trabalho;
+\item Complexidade de implementação.
+\end{itemize}
+
+Baseando-se nesses pontos, objetivamos chegar a um subconjunto da linguagem Ruby que iremos implementar em nosso tradutor. Para isso, respeitando as aspirações do trabalho, definimos as principais limitações do tradutor, features da linguagem que não serão implementadas:
+\begin{itemize}
+\item Herança;
+\item Sobrecarga;
+\item Passagem de código por parâmetro;
+\item Bibliotecas da linguagem.
+\end{itemize}
+
+Com isso, depois de fazer uma análise sobre as features da linguagem, chegamos a uma lista de comentados que serão implementados. Essa relação de itens baseia-se nos mesmos critérios descritos no primeiro raciocínio.
+\begin{itemize}
+\item Comentários
+\item Variáveis
+	\begin{itemize}
+		\item Locais
+		\item De Classe
+		\item Globais
+		\item Constantes
+	\end{itemize}
+
+\item Desvio Condicional
+	\begin{itemize}
+		\item if condição
+		\item if condição .. else .. end
+		\item if condição .. elsif .. else .. end
+		\item case 
+	\end{itemize}
+
+\item Laços de repetição e controle de laços
+	\begin{itemize}
+		\item while
+		\item for
+		\item until
+		\item break
+		\item next
+		\item redo
+	\end{itemize}
+
+\item Blocos
+  O conceito de Bloco em Ruby é um chunk de código que pode ser chamado a qualquer momento durante a execução de um programa.
+\item Iteradores
+	\begin{itemize}
+		\item each
+	\end{itemize}
+
+\item File I/O
+	\begin{itemize}
+		\item puts
+		\item putc
+		\item print
+		\item gets
+		\item abrir e fechar arquivos
+	\end{itemize}
+
+\end{itemize}
+
+
+Todos outros comandos da linguagem Ruby que não estao presentes na lista anterior não fazem parte do escopo desta implementação. Dentre os comandos que NÃO farão parte desta implementação destacam-se:
+\begin{itemize}
+	\item {Variáveis de instancia}
+	\item {Variáveis do tipo Hash}
+	\item {retry}\\
+		Exeption handling inside loops
+	\item {unless}\\
+		Desvio condicional
+	\item {Blocos de BEGIN e END}\\
+		São blocos de código executado enquanto o arquivo é carregado.
+	\item {Modules}\\
+		São agrupamentos de métodos, classes e constantes.
+	\item {Mixins}\\
+		É a forma que ruby usa como contrapartida do fato de não suportar herança multipla.
+\end{itemize}
+
+
+\section{Linguagem Alvo}
+
+A liguagem alvo para o nosso tradutor - linguagem de output - sera C, por ser
+uma linguagem que possui bons compiladores e rapidos executaveis. A linguagem
+tambem e dominada pelo grupo.
+
+
+
+\section{Exemplo de Entrada e Saida Esperadas}
+
+\subsection{Entrada}
+\begin{lstlisting}[language=ruby]
+class Person
+  def initialize(fname, lname)
+   @fname = fname
+   @lname = lname
+  end
+end
+person = Person.new("Augustus","Bondi")
+print person
+\end{lstlisting}
+
+\subsection{Saida}
+\begin{lstlisting}[language=c]
+/* include section */
+
+struct person_s {
+	char *fname;
+	char *lname;
+};
+typedef struct person_s person_t;
+
+
+/* function prototypes */
+void initialize(char *, char *);
+
+void initialize(char *fname, char *lname)
+{
+	person.fname = malloc(sizeof(char) * (strlen(fname) + 1));
+	strcpy(person.fname, fname);
+	strcat(person.fname, '\0');
+	
+	person.lname = malloc(sizeof(char) * (strlen(lname) + 1));
+	strcpy(person.lname, lname);
+	strcat(person.lname, '\0');
+}
+
+void print_person(person_t person)
+{
+	printf("%s %s\n", fname, lname);
+}
+
+int main(int argc, char **argv)
+{
+	person_t *person = malloc(sizeof(person));;
+	initialize("Augustus","Bondi");
+
+	print_person(person);
+
+	return 0;
+}
+\end{lstlisting}
+
+
+\section{Ferramenta a ser Ultilizada}
+
+Bison
+
+\section{References}
+http://www.tutorialspoint.com/ruby/
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}
