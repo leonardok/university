@@ -12,7 +12,11 @@
 #ifndef __ERROR_CODES_H__
 #define __ERROR_CODES_H__
 
-#define GENERIC_SUCCESS 0
-#define GENERIC_FAIL    1
+enum return_codes {
+	GENERIC_SUCCESS,
+	GENERIC_FAIL,
+	NODE_FOUND,
+	NODE_NOT_FOUND 
+};
 
 #endif

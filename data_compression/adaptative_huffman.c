@@ -40,23 +40,15 @@ type_ahuffman_tree *ahuffman_tree;
  */
 int ahuffman_begin_tree(char *s)
 {
-	type_ahuffman_tree *root_node, *nyt_node, *new_node;
+	type_ahuffman_tree *nyt_node;
 
 	printf("Enter - ahuffman_begin_tree\n");
 
 	/* create new node with first char */
-	ahuffman_new_node(NODE, 1, root_node);
-	ahuffman_new_node(s[0], 1, new_node);
-	ahuffman_new_node(NYT,  0, nyt_node);
+	ahuffman_new_node(NYT,  0, &nyt_node);
 
 	/* construct tree */
-	root_node->l_child = new_node;
-	root_node->r_child = nyt_node;
-
-	new_node->parent = root_node;
-	nyt_node->parent = root_node;
-
-	ahuffman_tree = root_node;
+	ahuffman_tree = nyt_node;
 
 	printf("Exit - ahuffman_begin_tree\n");
 
@@ -108,9 +100,11 @@ int ahuffman_rotate_tree(void)
  *    example_nada(3); // Do nothing 3 times.
  * @endcode
  */
-int ahuffman_new_node(char c, int times, type_ahuffman_tree *node)
+int ahuffman_new_node(char c, int times, type_ahuffman_tree **new_node)
 {
-	printf("Enter - ahuffman_new_node\n");
+	printf("ahuffman_new_node - new node is %d\n", c);
+
+	type_ahuffman_tree *node = *new_node;
 
 	node = malloc(sizeof(node));
 	node->parent  = NULL;
@@ -118,6 +112,8 @@ int ahuffman_new_node(char c, int times, type_ahuffman_tree *node)
 	node->r_child = NULL;
 	node->value = c;
 	node->times = times;
+	
+	*new_node = node;
 
 	printf("Exit- ahuffman_new_node\n");
 
@@ -151,6 +147,173 @@ int ahuffman_write_encoded(void)
 
 
 /**
+ * @name    ahuffman_search
+ * @brief   Search for a node
+ *
+ * This function will search for a node and return its path if found. If not 
+ * found, return a negative number defined in return codes.
+ *
+ * @param [in] node Node where to begin the search
+ * @param [in] c    The searched character
+ * @param [in] path Path untill here. This is for the recursiveness
+ *
+ * @retval NODE_NOT_FOUND  Return not found if do not find :-)
+ * @retval Node Path       Return the node path if finds it
+ *
+ * TODO
+ * it seems that if the path is "0000" a wrong thing will happen. it will return
+ * 0 as the path for the found node.
+ *
+ */
+int ahuffman_search(type_ahuffman_tree *node, char c, int path)
+{
+	printf("ahuffman_search - enter\n");
+
+	if (!node)
+	{
+		printf("ahuffman_search - node is null\n");
+		return NODE_NOT_FOUND;
+	}
+	else
+		printf("ahuffman_search - node is %d\n", node->value);
+
+	int ret;
+	if (node->value == c)
+		return path;
+
+	if ((ret = ahuffman_search(node->l_child, c,((path << 1) | 0))) != NODE_NOT_FOUND)
+	{
+		printf("\tahuffman_search - returned from left child\n");
+		return ret;
+	}
+
+	if ((ret = ahuffman_search(node->r_child, c,((path << 1) | 1))) != NODE_NOT_FOUND)
+	{
+		printf("\tahuffman_search - returned from right child\n");
+		return ret;
+	}
+
+	printf("ahuffman_search - exit\n");
+
+	return NODE_NOT_FOUND;
+}
+
+
+/**
+ * TODO write this header
+ *
+ * @name    Example API Actions
+ * @brief   Example actions available.
+ * @ingroup example
+ *
+ * This API provides certain actions as an example.
+ *
+ * @param [in] repeat  Number of times to do nothing.
+ *
+ * @retval TRUE   Successfully did nothing.
+ * @retval FALSE  Oops, did something.
+ *
+ * Example Usage:
+ * @code
+ *    example_nada(3); // Do nothing 3 times.
+ * @endcode
+ */
+int ahuffman_add_node(char c)
+{
+	type_ahuffman_tree *new_tree  = NULL;
+	type_ahuffman_tree *new_node  = NULL;
+	type_ahuffman_tree *nyt_node  = NULL;
+	type_ahuffman_tree *root_node = NULL;
+	type_ahuffman_tree *parent_node = NULL;
+
+	int path      = 0;
+	int path_size = 0;
+
+
+	/**
+	 * the algorithm says that we add a new node besides
+	 * NYT, adding a new root for both
+	 */
+	path = (ahuffman_search(ahuffman_tree, NYT, 0xFF));
+	printf("\tahuffman_add_node - path for NYT is %x\n", path);
+
+	/* if this is true is that the tree has no members yet */
+	if (path == 0xFF)
+	{
+		printf("\tahuffman_add_node - adding first element\n");
+		nyt_node = ahuffman_tree;
+
+		ahuffman_new_node(c,    1, &new_node);
+		ahuffman_new_node(NODE, 1, &root_node);
+
+		root_node->l_child = nyt_node;
+		root_node->r_child = new_node;
+
+		nyt_node->parent = root_node;
+		new_node->parent = root_node;
+
+		ahuffman_tree = root_node;
+
+		return GENERIC_SUCCESS;
+	}
+
+	/* point NYT node to tree root */
+	nyt_node = ahuffman_tree;
+
+	/* walk on the tree to find the real NYT, according to path */
+	while (path && (path != 0xFF))
+	{
+		printf("\tahuffman_add_node - path bit is %x\n", (path & 1));
+
+		if ((path & 1) == 0)
+			nyt_node = nyt_node->l_child;
+		else
+			nyt_node = nyt_node->r_child;
+
+		path >>= 1;
+		path_size++;
+	}
+	printf("\tahuffman_add_node - path now is %x\n", path);
+	printf("\tahuffman_add_node - NYT node is pointing at node %x\n", 
+			nyt_node->value);
+	printf("\tahuffman_add_node - NYT parent node is %d\n", nyt_node->parent->value);
+
+	ahuffman_new_node(c,    1, &new_node);
+	ahuffman_new_node(NODE, 1, &root_node);
+	
+	parent_node = nyt_node->parent;
+
+	printf("\tahuffman_add_node - parent node is %d\n", nyt_node->parent->value);
+	printf("\tahuffman_add_node - l_child of parent is %d\n", parent_node->l_child->value);
+	printf("\tahuffman_add_node - r_child of parent is %d\n", nyt_node->parent->r_child->value);
+	printf("\tahuffman_add_node - new node is %d\n", new_node->value);
+
+	if (parent_node->l_child == nyt_node)
+	{
+		printf("\tahuffman_add_node - root will be placed at left\n");
+		parent_node->l_child = root_node;
+	}
+	else
+	{
+		printf("\tahuffman_add_node - root will be placed at left\n");
+		parent_node->r_child = root_node;
+	}
+
+	root_node->parent  = parent_node;
+	root_node->l_child = nyt_node;
+	root_node->r_child = new_node;
+	printf("\tahuffman_add_node - new node is %d\n", new_node->value);
+
+	nyt_node->parent = root_node;
+	new_node->parent = root_node;
+
+	ahuffman_tree = new_tree;
+
+	return GENERIC_SUCCESS;
+}
+
+
+/**
  * TODO write this header
  *
  * @name    Example API Actions
@@ -172,15 +335,31 @@ int ahuffman_write_encoded(void)
 int ahuffman_encode(char *s)
 {
 	int i;
+	int code = 0;
 	int str_size = strlen(s);
 
 	/* this starts the tree with first char */
 	ahuffman_begin_tree(s);
 
-	for (i=1; i<str_size; i++)
+	for (i=0; i<=str_size; i++)
 	{
-		if (s[i])
-		{}
+		printf("ahuffman_encode - encoding char '%c'\n", s[i]);
+
+		/* if node not found, add it to the tree */
+		if ((code = ahuffman_search(ahuffman_tree, s[i], 0)) == NODE_NOT_FOUND)
+		{
+			printf("ahuffman_encode - node not found, adding it\n");
+			ahuffman_add_node(s[i]);
+
+			/* get code again */
+			code = ahuffman_search(ahuffman_tree, s[i], 0);
+		}
+		printf("code for %c is %x\n\n", s[i], code);
+
+		printf("\tahuffman_add_node - NYT node is %d\n", ahuffman_tree->l_child->value);
+		printf("\tahuffman_add_node - new node is %d\n", ahuffman_tree->r_child->value);
+		printf("\tahuffman_add_node - new node parent is %d\n", ahuffman_tree->r_child->parent->value);
+		printf("\tahuffman_add_node - NYT node parent is %d\n", ahuffman_tree->l_child->parent->value);
 	}
 
 	return GENERIC_SUCCESS;
