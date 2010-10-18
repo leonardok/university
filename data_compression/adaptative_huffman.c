@@ -21,6 +21,8 @@
 /* declaration of the global ahuffman tree */
 extern type_ahuffman_tree *ahuffman_tree;
 extern long int byte_buffer;
+extern int *output_file;
+extern long int global_bytes_written;
 
 
 /**
@@ -283,7 +285,6 @@ int ahuffman_write_encoded_to_file(int code, int *fp)
     int tmp_code         = code;
     int buffer_used_bits = 0;
 
-    log_write("get buffer size - %x", 1, LOG_INFO, (byte_buffer & 0xFFFFFFFF));
     while (tmp_buffer != 0xFFFFFFFF)
     {
         tmp_buffer >>= 1;
@@ -291,18 +292,16 @@ int ahuffman_write_encoded_to_file(int code, int *fp)
         //log_write("buffer_used_bits++", 1, LOG_INFO);
     }
 
-    log_write("ahuffman_write_encoded_to_file - used %d of the buffer",
-            0, LOG_INFO, buffer_used_bits);
-    log_write("ahuffman_write_encoded_to_file - code is %x",
-            0, LOG_INFO, byte_buffer);
     while (tmp_code != 0xFF)
     {
         if (buffer_used_bits >= 31)
         {
+            global_bytes_written++;
             //write into the file
-            //write_buffer((int) (byte_buffer & 0xFFFFFFFF));
-            printf("ahuffman_write_encoded_to_file - buffer print \'%lx\'\n",
-                    (byte_buffer & 0xFFFFFFFF)); 
+            write(output_file, (byte_buffer & 0xFFFFFFFF), 4);
+
+            printf("ahuffman_write_encoded_to_file - byte #%d buffer print \'%lx\'\n",
+                    global_bytes_written, (byte_buffer & 0xFFFFFFFF)); 
 
             byte_buffer = 0xFFFFFFFF;
             buffer_used_bits = 0;
@@ -312,6 +311,8 @@ int ahuffman_write_encoded_to_file(int code, int *fp)
         buffer_used_bits++;
         
         tmp_code >>= 1;
+
+        //log_write("tmp_code >>= 1;", 1, LOG_INFO);
     }
     
 	return GENERIC_SUCCESS;
@@ -339,7 +340,7 @@ int ahuffman_write_encoded_to_file(int code, int *fp)
  */
 int ahuffman_search(type_ahuffman_tree *node, char c, int path)
 {
-	//printf("ahuffman_search - enter\n");
+	printf("ahuffman_search - enter\n");
 
 	if (!node)
 	{
@@ -365,7 +366,7 @@ int ahuffman_search(type_ahuffman_tree *node, char c, int path)
 		return ((ret <<= 1) | 1);
 	}
 
-	log_write("ahuffman_search - exit", 2, LOG_DEBUG);
+	log_write("ahuffman_search - exit", 2, LOG_INFO);
 
 
 	return NODE_NOT_FOUND;
@@ -533,15 +534,16 @@ void increment_counters(int path)
  *    example_nada(3); // Do nothing 3 times.
  * @endcode
  */
-int ahuffman_encode(char *s)
+int ahuffman_encode(char *s, int str_size)
 {
 	int i;
 	long int code = 0;
-	int str_size = strlen(s);
 
 	/* this starts the tree with first char */
-	ahuffman_begin_tree(s);
+    if (!ahuffman_tree)
+        ahuffman_begin_tree(s);
 
+    log_write("ahuffman_encode - string size is '%d'", 0, LOG_INFO, str_size);
 	for (i=0; i<=str_size; i++)
 	{
 		log_write("ahuffman_encode - encoding char '%c'", 0, LOG_INFO, s[i]);
@@ -549,7 +551,7 @@ int ahuffman_encode(char *s)
 		/* if node not found, add it to the tree */
 		if ((code = ahuffman_search(ahuffman_tree, s[i], 0xff)) == NODE_NOT_FOUND)
 		{
-			log_write("ahuffman_encode - node not found, adding it", 0, LOG_INFO);
+			log_write("ahuffman_encode - node not found, adding it", 0, LOG_DEBUG);
 			type_ahuffman_tree *new_node;
 
             code = ahuffman_search(ahuffman_tree, NYT, 0xff);
@@ -567,10 +569,13 @@ int ahuffman_encode(char *s)
 
 		/* get code again */
 		code = ahuffman_search(ahuffman_tree, s[i], 0xff);
+        printf("oioioioio\n");
         ahuffman_write_encoded_to_file(code, NULL); 
+        printf("aiaiaiia\n");
 		
 		increment_counters(code);
-		log_write("code for %c is %x", 0, LOG_INFO, s[i], code);
+        printf("oooooooooooooo\n");
+		log_write("code for %c is %x", 0, LOG_DEBUG, s[i], code);
 	}
 
 	return GENERIC_SUCCESS;

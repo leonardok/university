@@ -32,6 +32,6 @@ int ahuffman_begin_tree(char *);
 int ahuffman_rotate_tree(void);
 int ahuffman_new_node(char c, int times, type_ahuffman_tree **);
 int ahuffman_write_encoded(void);
-int ahuffman_encode(char *);
+int ahuffman_encode(char *, int);
 
 #endif
