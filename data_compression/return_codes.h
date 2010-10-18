@@ -17,7 +17,8 @@ enum return_codes {
 	GENERIC_FAIL,
 	NODE_FOUND,
 	NODE_NOT_FOUND,
-	TREE_BALANCED
+	TREE_BALANCED,
+    NODE_CHANGED
 };
 
 #endif

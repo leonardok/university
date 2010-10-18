@@ -15,6 +15,9 @@
 #include "return_codes.h"
 #include "adaptative_huffman.h"
 
+type_ahuffman_tree *ahuffman_tree;
+long int byte_buffer = 0xFFFFFFFF;
+
 /**
  * TODO write this header
  *
