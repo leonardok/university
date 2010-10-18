@@ -83,16 +83,117 @@ int ahuffman_rotate_tree(void)
 }
 
 
-int check_tree_balance(void)
+/**
+ * @name    exchange_node
+ * @brief   Exchange two nodes
+ *
+ * This function will do the following steps:
+ *     1. get parent of node_a
+ *     2. get parent of node_b
+ *     3. check if parents are the same, if they are just change parent child pointers
+ *        and return.
+ *     4. check weather the nodes to be exchanged are left or right child of parents
+ *     5. change parent_a child to node_b and parent_b to node_a
+ *     6. change node pointers.
+ *
+ * @param [in] type_ahuffman_tree  Node 'a' to be exchanged
+ * @param [in] type_ahuffman_tree  Node 'b' to be exchanged
+ *
+ * @retval GENERIC_SUCCESS  Successfully did nothing.
+ * @retval GENERIC_FAIL     Oops, did something.
+ */
+int exchange_nodes(type_ahuffman_tree **node_a, type_ahuffman_tree **node_b)
 {
-
-	return 1;
+	type_ahuffman_tree *parent_a  = (*node_a)->parent;
+	type_ahuffman_tree *parent_b  = (*node_b)->parent;
+	
+	if (parent_a == parent_b)
+	{
+		type_ahuffman_tree *node_tmp = parent_a->r_child;
+		
+		parent_a->r_child = parent_a->l_child;
+		parent_a->l_child = node_tmp;
+		
+		return GENERIC_SUCCESS;
+	}
+	
+	if (parent_a->l_child == *node_a)
+		parent_a->l_child = *node_b;
+	else 
+		parent_a->r_child = *node_b;
+	
+	if (parent_b->l_child == *node_b)
+		parent_b->l_child = *node_a;
+	else 
+		parent_b->r_child = *node_a;
+	
+	(*node_b)->parent = parent_a;
+	(*node_a)->parent = parent_b;
+	
+	return GENERIC_SUCCESS;
 }
 
 
-int get_node_weight(int height, type_ahuffman_tree *node)
+int check_recursive(type_ahuffman_tree *node_to_check, 
+		    type_ahuffman_tree *node_ptr, 
+		    int node_depth, int depth_we_are)
 {
-	return 0;
+	/* we are not interested in exchanging nodes deeper than we are */
+	if (!node_ptr || depth_we_are >= node_depth)
+		return TREE_BALANCED;
+	
+	check_recursive(node_to_check, node_to_check->l_child, node_depth, depth_we_are+1);
+	
+	if ((node_ptr->weight < node_to_check->weight) && (node_to_check->parent != node_ptr))
+		exchange_nodes(&node_to_check, &node_ptr);
+	
+	check_recursive(node_to_check, node_to_check->r_child, node_depth, depth_we_are+1);
+	
+	return GENERIC_SUCCESS;
+}
+
+
+/**
+ * @name    check_node_balance
+ * @brief   Check balance for last node.
+ *
+ * This function will check if the last node to be updated is respecting the
+ * huffman tree properties.
+ *
+ * @param [in] void
+ *
+ * @retval TRUE   Successfully did nothing.
+ * @retval FALSE  Oops, did something.
+ */
+int check_node_balance(type_ahuffman_tree *node)
+{
+	type_ahuffman_tree *node_ptr = node;
+	int node_depth = 0;
+	
+	/* get node deph */
+	while (node_ptr != ahuffman_tree)
+	{
+		node_depth++;
+		node_ptr = node_ptr->parent;
+	}
+	
+	check_recursive(node, ahuffman_tree, node_depth, 0);
+	
+	return GENERIC_SUCCESS;
+}
+
+
+int check_tree_balance(type_ahuffman_tree *node)
+{
+	if (node)
+	{
+		check_tree_balance(node->l_child);
+		check_tree_balance(node->r_child);
+		
+		check_node_balance(node);
+	}
+	
+	return GENERIC_SUCCESS;
 }
 
 
@@ -196,16 +297,16 @@ int ahuffman_search(type_ahuffman_tree *node, char c, int path)
 	if (node->value == c)
 		return path;
 
-	if ((ret = ahuffman_search(node->l_child, c,((path << 1) | 0))) != NODE_NOT_FOUND)
+	if ((ret = ahuffman_search(node->l_child, c, path)) != NODE_NOT_FOUND)
 	{
 		//printf("\tahuffman_search - returned from left child\n");
-		return ret;
+		return ((ret <<= 1) | 0);
 	}
 
-	if ((ret = ahuffman_search(node->r_child, c,((path << 1) | 1))) != NODE_NOT_FOUND)
+	if ((ret = ahuffman_search(node->r_child, c, path)) != NODE_NOT_FOUND)
 	{
 		//printf("\tahuffman_search - returned from right child\n");
-		return ret;
+		return ((ret <<= 1) | 1);
 	}
 
 	//printf("ahuffman_search - exit\n");
@@ -233,7 +334,7 @@ int ahuffman_search(type_ahuffman_tree *node, char c, int path)
  *    example_nada(3); // Do nothing 3 times.
  * @endcode
  */
-int ahuffman_add_node(char c)
+int ahuffman_add_node(char c, type_ahuffman_tree **new_node_ptr)
 {
 	type_ahuffman_tree *new_node  = NULL;
 	type_ahuffman_tree *nyt_node  = NULL;
@@ -267,6 +368,7 @@ int ahuffman_add_node(char c)
 		new_node->parent = root_node;
 
 		ahuffman_tree = root_node;
+		*new_node_ptr = new_node;
 
 		return GENERIC_SUCCESS;
 	}
@@ -288,8 +390,8 @@ int ahuffman_add_node(char c)
 		path_size++;
 	}
 
-	ahuffman_new_node(c,    1, &new_node);
-	ahuffman_new_node(NODE, 1, &root_node);
+	ahuffman_new_node(c,    0, &new_node);
+	ahuffman_new_node(NODE, 0, &root_node);
 	
 	parent_node = nyt_node->parent;
 
@@ -311,6 +413,8 @@ int ahuffman_add_node(char c)
 
 	nyt_node->parent = root_node;
 	new_node->parent = root_node;
+	
+	*new_node_ptr = new_node;
 
 	return GENERIC_SUCCESS;
 }
@@ -389,11 +493,20 @@ int ahuffman_encode(char *s)
 		if ((code = ahuffman_search(ahuffman_tree, s[i], 0xff)) == NODE_NOT_FOUND)
 		{
 			printf("ahuffman_encode - node not found, adding it\n");
-			ahuffman_add_node(s[i]);
+			type_ahuffman_tree *new_node;
+			ahuffman_add_node(s[i], &new_node);
+			
+			/* if we have added a node we need to check if this node
+			 * is respecting the huffman tree */
+			check_node_balance(new_node);
 
 			/* get code again */
 			code = ahuffman_search(ahuffman_tree, s[i], 0xff);
 		}
+		
+		/* check if the huffman tree properties are been respected */
+		check_tree_balance(ahuffman_tree);
+		
 		increment_counters(code);
 		printf("code for %c is %x\n\n", s[i], code);
 	}

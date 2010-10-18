@@ -16,7 +16,8 @@ enum return_codes {
 	GENERIC_SUCCESS,
 	GENERIC_FAIL,
 	NODE_FOUND,
-	NODE_NOT_FOUND 
+	NODE_NOT_FOUND,
+	TREE_BALANCED
 };
 
 #endif
