@@ -96,7 +96,7 @@ void add_to_matrix(char *variable, int line, int kind_of_use)
 		var_matrix_ptr->attribuition_line = -1;
 		var_matrix_ptr->use_line          = -1;
 		var_matrix_ptr->next              = NULL;
-		symbol_matrix.declaration_line = line;
+		var_matrix_ptr->declaration_line  = line;
 
 		symbol_matrix_t *var_parent = get_last_entry();
 		var_parent->next = var_matrix_ptr;
@@ -132,6 +132,7 @@ void show_matrix(void)
 
 	printf("+----------+-------------+--------+-----+\n");
 	printf("| VARIABLE | DECLARATION | ATTRIB | USE |\n");
+	printf("+----------+-------------+--------+-----+\n");
 
 	symbol_matrix_t *symbol_matrix_ptr = &symbol_matrix;
 	while (symbol_matrix_ptr)
