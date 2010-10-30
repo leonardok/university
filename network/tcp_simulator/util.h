@@ -6,10 +6,10 @@
 
 enum
 {
-	OPEN,
-	CLOSE,
-	SEND_ACK,
-	SEND_SYN
+	CMD_OPEN,
+	CMD_CLOSE,
+	CMD_SEND_ACK,
+	CMD_SEND_SYN
 } command_types;
 
 #endif //__UTIL_H__

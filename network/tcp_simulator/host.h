@@ -2,8 +2,6 @@
 #define __HOST_H__
 
 
-struct
-
 enum
 {
 	LISTEN, SYN_SENT, SYN_RECEIVED, ESTABLISHED, FIN_WAIT_1,
@@ -12,8 +10,13 @@ enum
 
 enum
 {
-	REXMT, TIME_WAIT, USER_TIME
+	TO_REXMT, TO_TIME_WAIT, TO_USER_TIME
 } time_out_events;
+
+
+
+int pipe_descriptor;
+
 
 
 #endif //__HOST_H__

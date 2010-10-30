@@ -1,10 +1,15 @@
-all: console host_a host_b
+all: console hosts
 
-console:
-	gcc console_main.c -o console
+console: 
+	gcc console.c pipe.c -o console
+
+hosts: host_a host_b
 
 host_a:
+	gcc -DHOST_A pipe.c host.c -o host_a
+
 host_b:
+	gcc -DHOST_B pipe.c host.c -o host_b
 	
 clean:
-	rm console
+	rm console host_a host_b
