@@ -1,3 +1,20 @@
+/* TCP Simulator - Simulates TCP transactions
+ * Copyright (C) 2010  Leonardo Richter Korndorfer 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef __CONSOLE_H__
 #define __CONSOLE_H__
 
@@ -11,17 +28,16 @@ struct cmd_s
 
 void show_help(void);
 void quit(void);
-void passive_open(void);
-void active_open(void);
+void sim_close_all(void);
+void sim_send_packet(void);
+void sim_open_connection(void);
 
-#define COMMAND_NUM 6
+#define COMMAND_NUM 5
 cmd_t commands[COMMAND_NUM] = {
 	{"help",   "\t\tshow this help", show_help},
-	//{"passive_open host", "tell host to start to listen", NULL},
-	{"active_open host", "tell host start a connection with other host", active_open},
-	{"sndack", "\t\tsend ack to other host", NULL},
-	{"sndpkg", "\t\tsend package to other host", NULL},
-	{"close",  "\t\tsend FIN to other host", passive_open},
+	{"open_connection", "\tsimulate a handshake", sim_open_connection},
+	{"send_packet", "\t\tsend ack to other host", sim_send_packet},
+	{"close",  "\t\tsend FIN to other host", sim_close_all},
 	{"quit",   "\t\tquit this console", quit}
 	};
 

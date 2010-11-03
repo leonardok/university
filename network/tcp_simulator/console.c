@@ -1,4 +1,4 @@
-/* TCP Simulator - This program simulates a TCP communication between two hosts
+/* TCP Simulator - Simulates TCP transactions
  * Copyright (C) 2010  Leonardo Richter Korndorfer
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,13 +45,41 @@ void quit(void)
 	exit(0);
 }
 
-void passive_open(void)
-{}
-
-void active_open(void)
+void sim_close_all(void)
 {
-	printf("open communication with other host");
+	printf("sending CMD_CLOSE to Host A\n");
+	char cmd[10] = "CMD_CLOSE";
+	pipe_write(pipe_a, cmd);
 	
+	printf("sending CMD_CLOSE to Host B\n");
+	pipe_write(pipe_b, cmd);
+}
+
+
+void sim_send_packet(void)
+{
+	printf("sending data over to host B\n");
+	pipe_write(pipe_a, "CMD_SEND_PKT");
+	
+	char string_to_send[MAX_PIPE_DATA_SIZE];
+	printf("Please enter a string for me to send. (max of 512b)\n");
+	scanf("%s", string_to_send);
+	pipe_write(pipe_a, string_to_send);
+}
+
+
+void sim_open_connection(void)
+{
+	printf("sending CMD_LISTEN to Host A\n");
+	
+	char cmd[12] = "CMD_LISTEN";
+	pipe_write(pipe_a, cmd);
+	
+	
+	printf("sending CMD_CONNECT to Host B\n");
+	
+	strcpy(cmd, "CMD_CONNECT");
+	pipe_write(pipe_b, cmd);
 }
 
 
@@ -61,8 +89,11 @@ int main(void)
 	char command[256];
 	
 	/* open pipes for sending commands */
-	int pipe_a = open(HOST_A_PIPE, O_WRONLY);
-	int pipe_b = open_pipe(HOST_B_PIPE, O_WRONLY);
+	pipe_a = open_pipe(HOST_A_PIPE, O_WRONLY);
+	pipe_b = open_pipe(HOST_B_PIPE, O_WRONLY);
+	
+	if ((pipe_a == -1) || (pipe_b == -1))
+		exit(0);
 
 	printf("%s\n", gpl_message);
 	printf("Hi! I'am the TCP console. Type commands in me.\n");
