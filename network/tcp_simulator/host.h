@@ -29,4 +29,6 @@ unsigned char host_dst_port;
 
 unsigned int  host_state;
 
+char *message_to_send = NULL;
+
 #endif //__HOST_H__

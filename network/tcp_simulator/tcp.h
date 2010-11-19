@@ -25,7 +25,10 @@
  * the header we have then 60 bytes for data. considering 20 bytes of header
  * (minimun size) we have then 100 bytes for data.
  */
-#define MAX_TCP_PACKET_SIZE 120
+#define MAX_TCP_PACKET_SIZE_IN_BYTES   120
+#define DEFAULT_TCP_DATA_SIZE_IN_BYTES  40
+#define DEFAULT_WINDOW_SIZE              4
+#define PACKET_TTL                       5
 
 enum
 {
@@ -63,17 +66,50 @@ enum
 typedef struct tcp_packet_s tcp_packet_t;
 struct tcp_packet_s
 {
-	int16_t source_port;
-	int16_t destination_port;
-	int32_t sequence_number;
-	int32_t ack_number;
-	int8_t  data_offset: 4;
-	int8_t  reserved:    4;
-	int8_t  flag_bits;
-	int16_t window_size;
-	int16_t checksum;
-	int16_t urgent_poiter;
+	/* this first piece of the packet has 5 words of 32 bits. 160b -> 20 bytes */
+	int16_t pkt_source_port;
+	int16_t pkt_destination_port;
+	int32_t pkt_sequence_number;
+	int32_t pkt_ack_number;
+	int8_t  pkt_data_offset: 4;
+	int8_t  pkt_reserved:    4;
+	int8_t  pkt_flag_bits;
+	int16_t pkt_window_size;
+	int16_t pkt_checksum;
+	int16_t pkt_urgent_poiter;
+	
+	/* data segment plus options can go up to 40 bytes */
+	int32_t *pkt_options;
+	int32_t *pkt_data;
 };
+
+int window_size;
+
+enum 
+{
+	NOT_SENT, WAITING_CONFIRMATION, SENT
+};
+
+/* 
+ * this is the stream structure. it holds the following fields:
+ *   tcp_packet: this is the packet
+ *   status:     tells us how is the packet. enum TCP_PACKET_STATUS
+ */
+typedef struct packet_stream_s packet_stream_t;
+struct packet_stream_s
+{
+	tcp_packet_t tcp_packet;
+	int          status;
+	int          time_to_live;
+	
+	packet_stream_t *next_packet;
+};
+
+packet_stream_t packets_stream;
+
+/* this variables will hold the window pointers */
+packet_stream_t *window_start, *window_end, *last_pkt;
+
 
 
 #endif //__TCP_H__

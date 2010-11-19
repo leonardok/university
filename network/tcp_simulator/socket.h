@@ -24,6 +24,9 @@
 
 int sfd_other_host;
 
+int send_tcp_packet(tcp_packet_t *tcp_packet);
+int receive_tcp_packet(tcp_packet_t **tcp_packet);
+
 int receive_tcp_packet_from_other(tcp_packet_t **);
 int send_tcp_packet_from_other(int);
 int get_message_from_other(void);

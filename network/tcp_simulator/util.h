@@ -55,7 +55,8 @@ enum
 	CMD_CONNECT,
 	CMD_CLOSE,
 	CMD_SEND_PKT,
-	CMD_SND_SYN
+	CMD_SND_SYN,
+	CMD_CHNG_WINDOW_SIZE
 } command_types;
 
 #endif //__UTIL_H__

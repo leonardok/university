@@ -23,8 +23,10 @@
 #include "console.h"
 #include "util.h"
 #include "pipe.h"
+#include "tcp.h"
 
 extern cmd_t commands[COMMAND_NUM];
+extern int   window_size;
 
 void show_help(void)
 {
@@ -43,6 +45,32 @@ void show_help(void)
 void quit(void)
 {
 	exit(0);
+}
+
+
+void sim_set_window_size(void)
+{
+	int num;
+	printf("windows size is %d. ", window_size); 
+	printf("if you would like to change that size, please enter a value now.\n");
+	printf("(enter 0 for keep the same value): ");
+	scanf("%d", &num);
+	
+	if (num != 0)
+	{
+		window_size = num;
+		
+		/* send cmd to hosts */
+		char *cmd;
+		asprintf(&cmd, "CMD_CHNG_WINDOW_SIZE=%d", num);
+		
+		pipe_write(pipe_a, cmd);
+		pipe_write(pipe_b, cmd);
+		
+		printf("window size is now %d\n", window_size);
+	}
+		
+	
 }
 
 void sim_close_all(void)
@@ -82,11 +110,30 @@ void sim_open_connection(void)
 	pipe_write(pipe_b, cmd);
 }
 
+void sim_auto_test(void)
+{
+	char *string_to_send = "aaaaaaaaaaaaaaaaaaa dddddddddddddddddddddd vvvvvvvvvvvvvvvvvvvv rrrrrrrrrrrrrrrrr";
+	
+	sim_open_connection();
+	sleep(1);
+	
+	/* sim send packet */
+	printf("sending data over to host B\n");
+	pipe_write(pipe_a, "CMD_SEND_PKT");
+	
+	sleep(0.5);
+	pipe_write(pipe_a, string_to_send);
+	
+}
+
 
 int main(void)
 {
 	int i;
 	char command[256];
+	
+	/* initialize window size to defult */
+	window_size = DEFAULT_WINDOW_SIZE;
 	
 	/* open pipes for sending commands */
 	pipe_a = open_pipe(HOST_A_PIPE, O_WRONLY);

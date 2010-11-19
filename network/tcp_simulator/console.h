@@ -31,12 +31,16 @@ void quit(void);
 void sim_close_all(void);
 void sim_send_packet(void);
 void sim_open_connection(void);
+void sim_set_window_size(void);
+void sim_auto_test(void);
 
-#define COMMAND_NUM 5
+#define COMMAND_NUM 7
 cmd_t commands[COMMAND_NUM] = {
 	{"help",   "\t\tshow this help", show_help},
+	{"window_size", "\tcheck and set window size", sim_set_window_size},
 	{"open_connection", "\tsimulate a handshake", sim_open_connection},
 	{"send_packet", "\t\tsend ack to other host", sim_send_packet},
+	{"auto-test", "\t\trun auto-test", sim_auto_test},
 	{"close",  "\t\tsend FIN to other host", sim_close_all},
 	{"quit",   "\t\tquit this console", quit}
 	};

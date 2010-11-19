@@ -69,27 +69,6 @@ void debug_addrinfo(struct addrinfo *res)
 }
 
 
-void build_tcp_packet(tcp_packet_t *tcp_packet, int src_port, int dst_port,
-		      int ack_number, int flags, int window_size, void *data,
-		      int data_size)
-{
-	tcp_packet = malloc(sizeof(tcp_packet_t) + (sizeof(char) * data_size));
-	
-	host_seq_number++;
-	
-	tcp_packet->source_port      = src_port;
-	tcp_packet->destination_port = dst_port;
-	tcp_packet->sequence_number  = host_seq_number;
-	tcp_packet->ack_number       = ack_number;
-	tcp_packet->data_offset      = 5;
-	tcp_packet->reserved         = 0;
-	tcp_packet->flag_bits        = flags;
-	tcp_packet->window_size      = window_size;
-	//tcp_packet->checksum         ;
-	tcp_packet->urgent_poiter    = 0;
-}
-
-
 /*
  * this function will be executed in a thread waiting for new messages to come.
  */
@@ -114,7 +93,7 @@ int send_tcp_packet_from_other(int flags)
 	tcp_packet_t *tcp_packet;
 	
 	tcp_packet = malloc(sizeof(tcp_packet_t));
-	tcp_packet->flag_bits = flags;
+	tcp_packet->pkt_flag_bits = flags;
 	
 	if ((bytes_sent = send(sfd_other_host, (void*) tcp_packet, MAXDATASIZE-1, 0)) < 1)
 	{
@@ -123,6 +102,34 @@ int send_tcp_packet_from_other(int flags)
 	}
 
 	return bytes_sent;
+}
+
+
+int send_tcp_packet(tcp_packet_t *tcp_packet)
+{
+	int  bytes_sent;
+		
+	if ((bytes_sent = send(sfd_other_host, (void*) tcp_packet, MAXDATASIZE-1, 0)) < 1)
+	{
+		perror("get_message_from_other");
+		return FALSE;
+	}
+	
+	return bytes_sent;
+}
+
+
+int receive_tcp_packet(tcp_packet_t **tcp_packet)
+{
+	int bytes_recv;
+	
+	if ((bytes_recv = recv(sfd_other_host, tcp_packet, MAXDATASIZE-1, 0)) == -1) 
+	{
+		perror("get_message_from_other");
+		return FALSE;
+	}
+	
+	return bytes_recv;
 }
 
 

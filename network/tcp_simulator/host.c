@@ -20,6 +20,7 @@
 #include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "tcp.h"
 #include "host.h"
@@ -28,6 +29,7 @@
 #include "socket.h"
 
 extern unsigned int host_state;
+extern int          window_size;
 
 /*
  * we need to show the packets that come to our network "stack"
@@ -45,12 +47,12 @@ void cmd_listen(void)
 	host_state = STATE_LISTENING;
 	printf("You can now connect to the other host with the \"connect()\" call.\n");
 	
-	while (!tcp_packet || !(tcp_packet->flag_bits & MASK_SYN))
+	while (!tcp_packet || !(tcp_packet->pkt_flag_bits & MASK_SYN))
 		receive_tcp_packet_from_other(&tcp_packet);
 	
 	send_tcp_packet_from_other(MASK_SYN | MASK_ACK);
 	
-	while (!tcp_packet || !(tcp_packet->flag_bits & MASK_ACK))
+	while (!tcp_packet || !(tcp_packet->pkt_flag_bits & MASK_ACK))
 		receive_tcp_packet_from_other(&tcp_packet);
 	
 	printf("STATE_ESTABLISHED\n");
@@ -76,7 +78,7 @@ void cmd_connect(void)
 	 * TODO: time out here. we can give it to a thread, if not finished at
 	 * given timeout, kill it and send SYN again.
 	 */
-	while (!tcp_packet || !(tcp_packet->flag_bits & (MASK_SYN | MASK_ACK)))
+	while (!tcp_packet || !(tcp_packet->pkt_flag_bits & (MASK_SYN | MASK_ACK)))
 		receive_tcp_packet_from_other(&tcp_packet);
 	printf("state: STATE_SYN_RECEIVED\n");
 	
@@ -107,15 +109,203 @@ int get_work(int fp)
 	if (!strncmp(buf, "CMD_SEND_PKT", read_size))
 		return CMD_SEND_PKT;
 	
-	return TRUE;
+	if (strstr(buf, "CMD_CHNG_WINDOW_SIZE") != NULL)
+	{
+		/* return the first char after the '=' token */
+		char *new_window_sz_str = (strstr(buf, "="));
+		window_size = atoi(++new_window_sz_str);
+		
+		return CMD_CHNG_WINDOW_SIZE;
+	}
+		
+	
+	return -1;
+}
+
+void build_tcp_packet(tcp_packet_t *tcp_packet, int src_port, int dst_port,
+		      int ack_number, int flags, int window_size, int seq_number, 
+		      void *data, int data_size, char *options)
+{
+	tcp_packet = malloc(sizeof(tcp_packet_t) + (sizeof(char) * data_size));
+		
+	tcp_packet->pkt_source_port      = src_port;
+	tcp_packet->pkt_destination_port = dst_port;
+	tcp_packet->pkt_sequence_number  = seq_number;
+	tcp_packet->pkt_ack_number       = ack_number;
+	
+	tcp_packet->pkt_reserved         = 0;
+	tcp_packet->pkt_flag_bits        = flags;
+	tcp_packet->pkt_window_size      = window_size;
+		//tcp_packet->pkt_checksum         ;
+	tcp_packet->pkt_urgent_poiter    = 0;
+	
+	if (options == NULL)
+		tcp_packet->pkt_data_offset = 0;
+	else 
+		tcp_packet->pkt_data_offset = (sizeof(options) / 32);
+	
+	tcp_packet->pkt_data = malloc(data_size);
+	tcp_packet->pkt_data = data;
+	
+}
+
+
+/* put packets into packets_stream */
+void *break_message_into_packets(void)
+{
+	printf("starting break_message_into_packets \n");
+	
+	int i;
+	int data_size;
+	packet_stream_t *packet     = NULL;
+	packet_stream_t *new_packet = NULL;
+	
+	char *message_ptr = message_to_send;
+	
+	/* message size in bytes */
+	int message_size  = strlen(message_to_send) * sizeof(char);
+	
+	printf("message to send is %s with size %d\n", message_ptr, message_size);
+
+	
+	/* this assumes we are NOT sending options over */
+	int num_of_pieces = message_size % DEFAULT_TCP_DATA_SIZE_IN_BYTES;
+	
+	printf("splitting into %d pieces\n", num_of_pieces);
+	
+	/* split pieces into array of tcp packets */
+	for (i = 0; i <= num_of_pieces; i++) 
+	{
+		printf("building packet %d\n", i);
+
+		/* 
+		 * if we are going with only one message, it probably doesnt have
+		 * more than 40 bytes, so dont need to allocate all space 
+		 */
+		data_size = message_size;
+		
+		if (num_of_pieces > 0)
+			data_size = 40;
+		
+		
+		/* first packet is static allocated */
+		if (i == 0)
+		{
+			packet = &packets_stream;
+		}
+		/* allocate new packet */
+		else
+		{
+			/*  */
+			new_packet = malloc(sizeof(tcp_packet_t) + data_size);
+			packet->next_packet = new_packet;
+			
+			/* now point "new packet" by "packet" to continue */
+			packet = new_packet;
+		}
+		
+		
+		char *data = malloc(data_size);
+		memcpy(data, message_ptr, data_size);
+				
+		/* TODO: use build_tcp_packet here */
+		build_tcp_packet(&(packet->tcp_packet),
+				 host_src_port, 
+				 host_dst_port,
+				 0,                // ack number
+				 0,                // flags 
+				 window_size,      // window size
+				 host_seq_number,  // host sequence number
+				 (void *) data,    // data
+				 data_size,        // data_size
+				 NULL              // options
+				 );
+		
+		host_seq_number++;
+		
+		/* point to the first of next message segment */
+		message_ptr += data_size;
+		
+		packet->status      = NOT_SENT;
+		packet->next_packet = NULL;		
+	}
+	
+	printf("ended break_message_into_packets\n");
+	
+	return NULL;
+}
+
+/* this function sets the window pointers to the packets */
+void initialize_tcp_window(void)
+{
+	printf("start initialize_tcp_window\n");
+	int i;
+	packet_stream_t *packet_ptr = &packets_stream;
+	
+	printf("debug 1\n");
+
+	window_start = packet_ptr;
+	for (i = 0; ((i < window_size) && (packet_ptr->next_packet != NULL)); i++) 
+	{
+		printf("debug 2\n");
+
+		packet_ptr = packet_ptr->next_packet;
+	}
+	
+	printf("debug 3\n");
+
+	window_end = packet_ptr;
+	
+	printf("ended initialize_tcp_window\n");
 }
 
 
 /*
- * this thread will watch for stuff to do, that come from the get work routi 
+ * this thread will send stuff to the other host
  */
-void host_thread(void)
+void send_stuff_thread(void)
 {
+	packet_stream_t *packet_ptr;
+	
+	/* 
+	 * this thread never sleeps. send the message to other host
+	 * whenever there is stuff to send.
+	 */
+	while (TRUE) 
+	{
+		sleep(5);
+		if (message_to_send != NULL)
+		{
+			printf("message found, breaking message into pieces\n");
+			break_message_into_packets();
+			initialize_tcp_window();
+			
+			
+			while (last_pkt->status != SENT)
+			{
+				sleep(1);
+				packet_ptr = window_start;
+				
+				while (packet_ptr != window_end) 
+				{
+					if ((packet_ptr->status == NOT_SENT) || 
+					    ((packet_ptr->status != SENT) && (packet_ptr->time_to_live >= PACKET_TTL)))						
+					    
+					{
+						printf("sending tcp packet with seq. %d\n", packet_ptr->tcp_packet.pkt_sequence_number);
+						send_tcp_packet(&packet_ptr->tcp_packet);
+					}
+					
+					/* slide window */
+					if (packet_ptr->status == SENT)
+					{
+						window_end   = window_end->next_packet;
+						window_start = window_start->next_packet;
+					}						
+				}
+			}
+		}
+	}
 	
 }
 
@@ -130,6 +320,11 @@ void cmd_send_stuff(char *buf)
 int main(void)
 {
 	int cmd;
+	
+	/* initialize window size to defult */
+	window_size = DEFAULT_WINDOW_SIZE;
+	
+	message_to_send = NULL;
 	
 	/*pthread_t pthread_id[2];
 	pthread_attr_t attr;*/
@@ -150,7 +345,7 @@ int main(void)
 	if (HOST == HOST_A)
 	{
 		open_socket();
-		send_message_to_other("Hello Client!");
+		send_message_to_other("Hello Client! You can start your simulation.");
 		get_message_from_other();
 		printf("\n\n\n");
 	}
@@ -176,13 +371,25 @@ int main(void)
 	 * messages with the other host.
 	 */
 	
+	/* thread to construct packets */
+	pthread_t pthread_id[10];
+	pthread_attr_t attr;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
+	pthread_create(&pthread_id[0], 
+		       &attr, 
+		       (void *) &send_stuff_thread,
+		       (void *) NULL);
 	/*
+	
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	
 	pthread_create(&pthread_id[0], &attr, 
 		       (void *)&receive_tcp_packet_from_other, NULL);
 	*/
+	
 
 	/* loop until gets work to do */
 	while (TRUE)
@@ -194,6 +401,9 @@ int main(void)
 		fflush(stdout);
 		cmd = get_work(pipe);
 
+		int  read_size;
+		char buf[MAX_PIPE_DATA_SIZE];
+		
 		switch (cmd)
 		{
 			case CMD_LISTEN:
@@ -209,13 +419,18 @@ int main(void)
 			case CMD_SEND_PKT:
 				printf("got CMD_SEND_PKT\n");
 				
-				/* get message to send over */
-				int  read_size;
-				char buf[MAX_PIPE_DATA_SIZE];
+				sleep(1);
 				
+				/* get message to send over */
 				while ((read_size = pipe_read(pipe, buf)) < 1);
 								
-				cmd_send_stuff(buf);
+				message_to_send = malloc(read_size * sizeof(char));
+				strncpy(buf, message_to_send, read_size);
+				
+				break;
+				
+			case CMD_CHNG_WINDOW_SIZE:				
+				printf("changed window size to %d\n", window_size);
 				
 				break;
 
@@ -223,6 +438,9 @@ int main(void)
 				break;
 
 			/* ACK packet */
+				
+			default:
+				printf("did not recognize cmd!\n");
 		}
 			 
 	}
