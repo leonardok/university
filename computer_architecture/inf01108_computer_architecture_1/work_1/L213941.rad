@@ -1,0 +1,109 @@
+; trabalho 1
+; the objective of this program is to write a program that compare
+; two arrays of numbers with 'n' elements and store in a third the
+; greater number of them both
+
+; varible declarations
+;	org	128
+;n:	db	0	; # of elements in array
+;e:	db	0	; address of the first element of the first
+			; array.
+
+	org	130	; vectors address
+count:	db	0	; element counter
+e_v1:	db	0	; first vector (in reality a copy of 'e')
+e_v2:	db	0	; second vector
+e_rslt:	db	0	; result vector
+
+; ###############
+; # program begin
+; ###############
+
+org	0		; redefine origin to #0
+
+; initialize registers with 0.
+ldr	a	#0
+ldr	b	#0	
+ldr	x 	#0
+ldr	a	129
+
+; initialize vector addressess
+str	a	e_v1	; store vector #1 address in e_v1
+add	a	128	; add n to have the start of vector v2
+str	a	e_v2	; store vector #2 address in e_v2
+add	a	128	; n more to have the result vector addr
+str	a	e_rslt	; result address
+
+	; start the comparation
+	ldr	x	128
+	jz	end		; if zero elements terminate
+
+loop_1:	ldr	a	e_v1,I	; if one is negative and not both
+	jn	comp_neg_v1	; we will cpy the non neg
+
+	ldr	b	e_v2,I
+	jn	cpy_v1		; test v2, and if neg no need to 
+				; go any further
+
+
+; Compare two positive numbers
+; If got here both numbers are positive
+comp_pos:
+	sub	a	e_v2,I
+	jz	cpy_v1
+	jc	cpy_v1
+	jn	cpy_v2
+	jmp	cpy_v1
+
+
+comp_neg_v1:
+	ldr	b	e_v2,I
+	jn	do_comp_neg	; if both are negs we have to comp
+				; like positives
+	jmp	cpy_v2		; if v2 is !neg cpy v2
+
+	
+do_comp_neg:
+	sub	b	e_v1,I
+	jn	cpy_v1
+	jz	cpy_v2
+	jc	cpy_v2
+	jmp	cpy_v1
+
+
+
+cpy_v1:	ldr	a	e_v1,I
+	jmp	continue
+
+
+cpy_v2:	ldr	a	e_v2,I
+	jmp	continue
+
+continue:
+	str	a	e_rslt,I
+
+	sub	x	#1
+	jz	end
+
+	ldr	a	e_v1	; increment e_v1
+	add	a	#1
+	str	a	e_v1
+
+	ldr	a	e_v2	; increment e_v2
+	add	a	#1
+	str	a	e_v2
+
+	ldr	a	e_rslt	; increment e_rslt
+	add	a	#1
+	str	a	e_rslt
+
+	jmp	loop_1
+
+
+end:	hlt			; terminate
+
+
+;;
+;; PUT YOUR TEST CODE HERE
+;;
+

@@ -1,0 +1,9 @@
+; Caso de teste 2
+     ORG 128
+N:   DB  1
+E:   DB  151
+
+     ORG 151
+V1:  DB  127
+V2:  DB  128
+V3:  DB  0 ; AQUI DEVE FICAR O VALOR 127

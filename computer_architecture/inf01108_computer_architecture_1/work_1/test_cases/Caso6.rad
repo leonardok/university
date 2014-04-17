@@ -1,0 +1,39 @@
+; Caso de teste 5
+
+     ORG 128
+N:   DB  10
+E:   DB  180
+
+     ORG 180
+V1:  DB  100
+     DB  100
+     DB  100
+     DB  100
+     DB  100
+     DB  100
+     DB  0
+     DB  110
+     DB  90
+     DB  -100
+
+V2:  DB  100
+     DB  0
+     DB  110
+     DB  90
+     DB  -100
+     DB  100
+     DB  100
+     DB  100
+     DB  100
+     DB  100
+
+V3:  DB  0 ; AQUI DEVE FICAR O VALOR 100
+     DB  0 ; AQUI DEVE FICAR O VALOR 100
+     DB  0 ; AQUI DEVE FICAR O VALOR 110
+     DB  0 ; AQUI DEVE FICAR O VALOR 100
+     DB  0 ; AQUI DEVE FICAR O VALOR 100
+     DB  0 ; AQUI DEVE FICAR O VALOR 100
+     DB  0 ; AQUI DEVE FICAR O VALOR 100
+     DB  0 ; AQUI DEVE FICAR O VALOR 110
+     DB  0 ; AQUI DEVE FICAR O VALOR 100
+     DB  0 ; AQUI DEVE FICAR O VALOR 100

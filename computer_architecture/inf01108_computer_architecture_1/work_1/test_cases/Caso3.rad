@@ -1,0 +1,23 @@
+; Caso de teste 3
+     ORG 128
+N:   DB  5
+E:   DB  200
+
+     ORG 200
+V1:  DB  -10
+     DB  128
+     DB  127
+     DB  0
+     DB  -1 ; Valores iguais em V1 e V2 !
+
+V2:  DB  10
+     DB  0
+     DB  -1
+     DB  127
+     DB  -1 ; Valores iguais em V1 e V2 !
+
+V3:  DB  0 ; AQUI DEVE FICAR O VALOR 10
+     DB  0 ; AQUI DEVE FICAR O VALOR 0
+     DB  0 ; AQUI DEVE FICAR O VALOR 127
+     DB  0 ; AQUI DEVE FICAR O VALOR 127
+     DB  0 ; AQUI DEVE FICAR O VALOR -1 (255)

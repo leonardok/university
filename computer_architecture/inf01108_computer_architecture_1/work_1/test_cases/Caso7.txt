@@ -1,0 +1,46 @@
+; Caso de teste 7
+
+     ORG 128
+N:   DB  12
+E:   DB  180
+
+
+     ORG 180
+V1:  DB  -120
+     DB  -120
+     DB  -120
+     DB  -120
+     DB  -120
+     DB  -120
+     DB  120
+     DB  120
+     DB  120
+     DB  120
+     DB  120
+     DB  120
+
+V2:  DB  0
+     DB  120
+     DB  -121
+     DB  -119
+     DB  121
+     DB  119
+     DB  0
+     DB  -120
+     DB  121
+     DB  119
+     DB  -121
+     DB  -119
+
+V3:  DB  0 ; AQUI DEVE FICAR O VALOR -10 (246)
+     DB  0 ; AQUI DEVE FICAR O VALOR 127
+     DB  0 ; AQUI DEVE FICAR O VALOR 100
+     DB  0 ; AQUI DEVE FICAR O VALOR 106
+     DB  0 ; AQUI DEVE FICAR O VALOR 120
+     DB  0 ; AQUI DEVE FICAR O VALOR 86
+     DB  0 ; AQUI DEVE FICAR O VALOR 100
+     DB  0 ; AQUI DEVE FICAR O VALOR 1
+     DB  0 ; AQUI DEVE FICAR O VALOR 127
+     DB  0 ; AQUI DEVE FICAR O VALOR 0
+     DB  0
+     DB  0
